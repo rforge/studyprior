@@ -1,5 +1,5 @@
 
-library(MultiPriorPackage)
+library(StudyPrior)
 
 set.seed(3)
 n <- sample(10:100, 10, replace = TRUE)
