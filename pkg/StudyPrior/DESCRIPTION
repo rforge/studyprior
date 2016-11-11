@@ -1,0 +1,22 @@
+Package: StudyPrior
+Type: Package
+Title: Distributions for Historical Information
+Version: 0.0.3
+Author: Isaac Gravestock
+Maintainer: Isaac Gravestock <isaac.gravestock@uzh.ch>
+Description: Implements useful prior distributions for incorporating data from
+    previous studies into a new study, such as power priors, meta-analytic priors.
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+Imports:
+    parallel,
+    optimr,
+    VGAM,
+    minpack.lm,
+    BB
+Depends:
+    INLA,
+    parallel,
+    cubature
+RoxygenNote: 5.0.1
