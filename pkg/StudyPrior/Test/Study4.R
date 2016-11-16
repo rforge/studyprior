@@ -81,7 +81,7 @@ SIGMAT <- list()
 system.time(SIGMAT$C.MFP <- do.sigmat(C.MFP))
 system.time(SIGMAT$C.MEP <- do.sigmat(C.MEP))
 system.time(SIGMAT$C.PFP <- do.sigmat(C.PFP))
-system.time(SIGMAT$C.PFP <- do.sigmat(C.PFP))
+system.time(SIGMAT$C.PEP <- do.sigmat(C.PEP))
 system.time(SIGMAT$C.PSP <- do.sigmat(C.PSP))
 
 
