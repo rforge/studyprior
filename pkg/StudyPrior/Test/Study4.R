@@ -10,7 +10,7 @@ Xs <- rbinom(1,100,0.6)
 Ns <- 200
 
 F.MFP <- binom.prior("MAP.FB", x = x, n=n)
-F.MEP <- binom.prior("MAP.EB", x = x, n=n)
+F.MEP <- binom.prior("MAP.EB", x = x, n=n, X=0:Ns, N=Ns, mc.cores=30)
 F.PFP <- binom.prior("PP.FB", x = x, n=n, samples=5000, length=100, mc.cores=30)
 ## With feedback
 F.PEP <- binom.prior("PP.EB", x = x, n=n, X=0:Ns, N=Ns, verbose=TRUE)
@@ -22,9 +22,8 @@ C.MFP <- list(conj.approx2(F.MFP, "beta", degree=3, length.fit = 500))
 
 C.MFP <- C.MFP[rep(1,201)]
 
-C.MEP <- list(conj.approx2(F.MEP, "beta", degree=3))
-
-C.MEP <- C.MEP[rep(1,201)]
+C.MEP <- mclapply(mc.cores=30,0:200, function(X) {
+  conj.approx2(function(p) F.MEP(p,X), "beta", degree=3)})
 
 C.PFP <- list(conj.approx2(F.PFP, "beta", degree=3, length.fit = 300))
 

@@ -9,11 +9,12 @@
 #'
 #' @examples
 #'
-binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR){
+binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
   n.hist <- length(x)
   n.new <- 0
 
- f <- mapply(X=X, N=N,
+ f <- mcmapply(mc.cores=mc.cores,
+               X=X, N=N,
     FUN=function(X,N, upper=upper, VAR=VAR, verbose=verbose){
 
       if(!(missing(X)|missing(N))) {
