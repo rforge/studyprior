@@ -27,7 +27,7 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
 
 
 
-      if(missing(upper)) upper <- 3
+      if(missing(upper)) upper <- 4
 
       logiflatAB <- paste0("expression:
   upper = ",upper,";
@@ -102,7 +102,7 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
       #   # for some reason the link is wrong
       #   plot(inla.tmarginal(function(x) 1/(1+exp(-x)), resultEB$marginals.fixed$`(Intercept)`),xlim=c(0,1))
       # points(inla.tmarginal(function(x) 1/(1+exp(-x)), resultEB$marginals.fitted.values$fitted.predictor.4))
-      ind <- round(resultEB$marginals.fitted.values[[n.hist+1]][,1],9)%in% c(0,1)
+      ind <- round(resultEB$marginals.fitted.values[[n.hist+1]][,1],7)%in% c(0,1)
 
       A <- resultEB$marginals.fitted.values[[n.hist+1]][!ind,1]
       B <- resultEB$marginals.fitted.values[[n.hist+1]][!ind,2]
