@@ -52,10 +52,13 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
                              data = dat,
                              family = "binomial",
                              control.fixed = list(mean.intercept = 0, prec.intercept = 1/1000),
-                             Ntrials=n,
-                             control.predictor = list(compute=TRUE, link=1),
+                             Ntrials=n
+                             # ,
+                             # control.predictor = list(compute=TRUE, link=1)
+                             )
+        # ,
                              # verbose = verbose,
-                             control.inla = list(int.strategy = "eb"))
+                             # control.inla = list(int.strategy = "eb"))
 
         result <- INLA::inla.hyperpar(result)
 
@@ -75,7 +78,7 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
         #   interval = c(0,upper),
         #   maximum = TRUE)
 
-        VP(mode_tau)
+        print(mode_tau)
       }
       # VXN <- ifelse(missing(VAR), var(log((x/n)/(1-x/n))), VAR)
       VXN <- mode_tau^2
