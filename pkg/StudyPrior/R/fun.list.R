@@ -236,3 +236,43 @@ sample.fun.list <- function(n, fun.list){
   }))
 }
 
+
+
+#' Quantile function
+#'
+#' @param p
+#' @param fun.list
+#'
+#' @return
+#' @export
+#'
+#' @examples
+q.fun.list <- function(p, fun.list){
+  sapply(p, function(p){
+    optimise( function(q){(p.fun.list(q,fun.list)-p)^2},
+              interval=c(0,1))$minimum
+  })
+}
+
+
+
+#' Probabilty density function
+#'
+#' @param q
+#' @param fun.list
+#'
+#' @return
+#' @export
+#'
+#' @examples
+p.fun.list <- function(q, fun.list){
+  w <- attr(fun.list,"weights")
+  L <- length(w)
+  p <- split(attr(fun.list,"pars"),rep(1:L, each=2))
+
+  sapply(q, function(q){
+    sum(sapply(1:L, function(i){
+      w[i]*pbeta(q, p[[i]][1],p[[i]][2])
+    }))
+  })
+}

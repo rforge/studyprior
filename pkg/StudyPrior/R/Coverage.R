@@ -1,5 +1,5 @@
 
-#' Coverage using prior using the Bayari thing
+#' Coverage using prior using the Bayarri thing
 #'
 #' @param prior
 #' @param length
@@ -19,19 +19,22 @@ calc.coverage <- function(prior, level, n.control, smooth, ...){
       # print(Xs)
       K <- integrate(post, lower=0, upper=1)$value
 
+      # get the confidence intervals
+      P <- seq(0,1,length.out = 1024)
+      marg <- list(x=P, y=post(P))
+      CI <- inla.hpdmarginal(level, marg)
+
+      # apply the smoothing
+      return(CI)
     } else if (inherits(prior,"mixture.list")){
-      post <-function(p) eval.fun.list(p, posterior.fun.list(Xs, n.control, prior))
+      q.fun.list(c((1-level)/2,1-(1-level)/2), posterior.fun.list(Xs, n.control, prior))
+
     } else if (inherits(prior,"list")){
-      post <-function(p) eval.fun.list(p, posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
+      # post <-function(p) eval.fun.list(p, posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
+      q.fun.list(c((1-level)/2,1-(1-level)/2),posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
     }
 
-    # get the confidence intervals
-    P <- seq(0,1,length.out = 1024)
-    marg <- list(x=P, y=post(P))
-    CI <- inla.hpdmarginal(level, marg)
 
-    # apply the smoothing
-    return(CI)
   })
   CI.mat <- as.matrix(t(CIs))
   plot.coverage(confidence.intervals = CI.mat,
