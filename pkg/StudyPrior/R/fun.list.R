@@ -154,6 +154,8 @@ var.fun.list <- function(fun.list){
   v <- apply(matrix(attr(fun.list,"pars"),nrow=2),2, function(x) x[1]*x[2]/( sum(x)^2 * (sum(x)+1) ))
   w <- attr(fun.list,"weights")
 
+  if(length(v)==1) return(v)
+
   mw <- m*w
   #by law of total variance for partitioned space
   sum(v*w) +
