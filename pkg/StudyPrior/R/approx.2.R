@@ -132,14 +132,14 @@ if(opt$convergence==0){
   #if we're smaller than the threshold return immediately
   if(opt$value  < return.value) break
 } else{
-  browser()
+  # browser()
   results[[degree]] <- opt
   values[[degree]] <- .Machine$double.xmax
 }
 
   }#end the for loop over degrees
 
-browser()
+# browser()
   degree <- which.min(values)
   opt <- results[[degree]]
 
