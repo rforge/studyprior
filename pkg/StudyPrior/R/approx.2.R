@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-conj.approx2 <- function(distr, type=c("beta","normal"), degree = 3, range=c(0,1), starts, length.fit=100, do.plot=FALSE){
+conj.approx2 <- function(distr, type=c("beta","normal"), max.degree = 3, return.value=0.2, range=c(0,1), starts, length.fit=100, do.plot=FALSE){
 
   x <- rep(seq(range[1],range[2], length.out = length.fit), each=1)
   y <- distr(x) #+ rnorm(length(x), 0, 0.05)
@@ -25,105 +25,111 @@ conj.approx2 <- function(distr, type=c("beta","normal"), degree = 3, range=c(0,1
                    "beta" = dbeta,
                    "normal" = dnorm )
 
-  params <- paste0(
-    switch(type,"normal" = c("mean","sd"),"beta" = c("shape1","shape2")),
-    rep(1:degree, each = 2))
-  ws <- paste0("w", rep(1:degree))
+  values <- results <- list()
 
-  #############################################################################
+  for( degree in seq.int(max.degree)){
 
-  start.list <- numeric(length(c(ws,params)))
-  names(start.list) <- c(ws,params)
-  start.list[1:degree] <- degree:1/sum(1:degree) #start with equal weights
+    params <- paste0(
+      switch(type,"normal" = c("mean","sd"),"beta" = c("shape1","shape2")),
+      rep(1:degree, each = 2))
+    ws <- paste0("w", rep(1:degree))
 
-  mode.d <- x[which.max(y)]
+    #############################################################################
 
-  fudge <- if(mode.d!=0) round(1/mode.d) else 1
+    start.list <- numeric(length(c(ws,params)))
+    names(start.list) <- c(ws,params)
+    start.list[1:degree] <- degree:1/sum(1:degree) #start with equal weights
 
-  if(missing(starts)){
-    start.list[-c(1:degree)] <-
-      switch(type,
-             "beta" = c(rbind(mode.d*(fudge+1:degree)/(1-mode.d), fudge + 1:degree)),
-             "normal" = c(rbind(mode.d+rnorm(degree,0,0.1),1:degree/degree/10 )))
-  }
-  #############################################################################
-  lower.list <-  switch(type,
-                        "beta" = c(rep(0, degree), rep(1, length(params))),
-                        "normal" =c(rep(0, degree),rep(c(0,0),degree)))
+    mode.d <- x[which.max(y)]
 
-  #############################################################################
+    fudge <- if(mode.d!=0) round(1/mode.d) else 1
 
-  upper.list <-  switch(type,
-                        "beta" = c(rep(1, degree), rep(500, length(params))),
-                        "normal" =c(1/1:degree,rep(c(1,5),degree)))
+    if(missing(starts)){
+      start.list[-c(1:degree)] <-
+        switch(type,
+               "beta" = c(rbind(mode.d*(fudge+1:degree)/(1-mode.d), fudge + 1:degree)),
+               "normal" = c(rbind(mode.d+rnorm(degree,0,0.1),1:degree/degree/10 )))
+    }
+    #############################################################################
+    lower.list <-  switch(type,
+                          "beta" = c(rep(0, degree), rep(1, length(params))),
+                          "normal" =c(rep(0, degree),rep(c(0,0),degree)))
 
-  #############################################################################
-  fl <- create.fun.list(type,
-                       unlist(start.list)[-c(1:degree)],
-                       unlist(start.list)[1:degree])
+    #############################################################################
+
+    upper.list <-  switch(type,
+                          "beta" = c(rep(1, degree), rep(500, length(params))),
+                          "normal" =c(1/1:degree,rep(c(1,5),degree)))
+
+    #############################################################################
+    fl <- create.fun.list(type,
+                          unlist(start.list)[-c(1:degree)],
+                          unlist(start.list)[1:degree])
 
 
-  opt.env <- new.env()
-  assign("x", x, envir=opt.env)
-  assign("y", y, envir=opt.env)
-  assign("fun.list", fl, envir=opt.env)
-
-  # opt <-
-  #   minpack.lm::nlsLM(formula( paste0("y ~ eval.fun.list(x, update.fun.list(fun.list, pars=c(",
-  #                                     paste(params,collapse=','),
-  #                                     "), weights=c(",
-  #                                     paste(ws, collapse=','),
-  #                                     ")))")),
-  #                     data = opt.env,
-  #                     start = start.list,
-  #                     lower = lower.list,
-  #                     upper = upper.list,
-  #                     trace=TRUE,
-  #                     control=nls.control(max=100)
-  #   )
+    opt.env <- new.env()
+    assign("x", x, envir=opt.env)
+    assign("y", y, envir=opt.env)
+    assign("fun.list", fl, envir=opt.env)
 
 
 
 
+    fn.wrap <-  function(PAR) sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
+                                                                              pars=PAR[-(1:degree)],
+                                                                              weights=PAR[1:degree])))^2)
 
-  fn.wrap <-  function(PAR) sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
-                                                        pars=PAR[-(1:degree)],
-                                                        weights=PAR[1:degree])))^2)
+    # fn.wrap.x <-  function(PAR,x) sum((y-eval.fun.list(x, update.fun.list(fun.list = fl,
+    #                                                                       pars=PAR[-(1:degree)],
+    #                                                                       weights=PAR[1:degree])))^2)
+    #
+    # opt2 <-
+    # nlmrt::nlxb(y~fn.wrap.x(c(ws,params), x),
+    #             data=data.frame(x,y),
+    #             start=unlist(start.list),
+    #             lower=unlist(lower.list),
+    #             upper=unlist(upper.list),
+    #             trace = TRUE)
 
-  fn.wrap.x <-  function(PAR,x) sum((y-eval.fun.list(x, update.fun.list(fun.list = fl,
-                                                                  pars=PAR[-(1:degree)],
-                                                                  weights=PAR[1:degree])))^2)
+    opt <-
+      optimr::optimr(unlist(start.list),
+                     fn.wrap,
+                     lower=unlist(lower.list),
+                     upper=unlist(upper.list),
+                     method = "L-BFGS-B",
+                     # method = "Rvmmin",
+                     control=list(trace=FALSE,
+                                  maxit=3000)
+      )
+    # opt <- BB::spg(unlist(start.list),
+    #            fn.wrap,
+    #            lower=unlist(lower.list),
+    #            upper=unlist(upper.list),
+    #            control=list(trace=FALSE,
+    #                         maxit=2000)
+    #   )
 
-  # opt2 <-
-  # nlmrt::nlxb(y~fn.wrap.x(c(ws,params), x),
-  #             data=data.frame(x,y),
-  #             start=unlist(start.list),
-  #             lower=unlist(lower.list),
-  #             upper=unlist(upper.list),
-  #             trace = TRUE)
+    print(paste(degree, ": ", opt$value))
 
-opt <-
-  optimr::optimr(unlist(start.list),
-                 fn.wrap,
-                 lower=unlist(lower.list),
-                 upper=unlist(upper.list),
-                 method = "L-BFGS-B",
-                 # method = "Rvmmin",
-                 control=list(trace=FALSE,
-                              maxit=2000)
-  )
-  # opt <- BB::spg(unlist(start.list),
-  #            fn.wrap,
-  #            lower=unlist(lower.list),
-  #            upper=unlist(upper.list),
-  #            control=list(trace=FALSE,
-  #                         maxit=2000)
-  #   )
+if(opt$convergence==0){
+  results[[degree]] <- opt
+  values[[degree]] <- opt$value
+  #if we're smaller than the threshold return immediately
+  if(opt$value  < return.value) break
+} else{
+  results[[degree]] <- NA
+  values[[degree]] <- .Machine$double.xmax
+}
 
+  }#end the for loop over degrees
 
-fl <- update.fun.list(fl, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
+# browser()
+  degree <- which.min(values)
+  opt <- results[[degree]]
 
-if(do.plot) plot.fun.list(x, fl, stack=TRUE, lines.only=TRUE)
+    fl <- create.fun.list(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
 
-  return(fl)
+    if(do.plot) plot.fun.list(x, fl, stack=TRUE, lines.only=TRUE)
+
+    return(fl)
 }
