@@ -15,7 +15,10 @@ conj.approx2 <- function(distr, type=c("beta","normal"), max.degree = 3, return.
 
   x <- rep(seq(range[1],range[2], length.out = length.fit), each=1)
   y <- distr(x) #+ rnorm(length(x), 0, 0.05)
-  dat <- data.frame(x,y)[-c(1,length.fit),]
+  dat <- data.frame(x,y)[-c(1:3,(length.fit-2):length.fit),]
+
+  dat.quick <- data.frame(  x = rep(seq(range[1],range[2], length.out = length.fit), each=1),
+                            y = distr(x))[-c(1:3,(23):25),]
 
   if(do.plot) plot(x,y, type='l', col=2)
 
@@ -74,7 +77,19 @@ conj.approx2 <- function(distr, type=c("beta","normal"), max.degree = 3, return.
 
 
 
-
+    opt.quick <-
+      optimr::optimr(unlist(start.list),
+                     function(PAR) sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
+                                                                                   pars=PAR[-(1:degree)],
+                                                                                   weights=PAR[1:degree])))^2)
+                     ,
+                     lower=unlist(lower.list),
+                     upper=unlist(upper.list),
+                     method = "L-BFGS-B",
+                     # method = "Rvmmin",
+                     control=list(trace=FALSE,
+                                  maxit=3000)
+      )
     fn.wrap <-  function(PAR) sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
                                                                               pars=PAR[-(1:degree)],
                                                                               weights=PAR[1:degree])))^2)
@@ -92,7 +107,7 @@ conj.approx2 <- function(distr, type=c("beta","normal"), max.degree = 3, return.
     #             trace = TRUE)
 
     opt <-
-      optimr::optimr(unlist(start.list),
+      optimr::optimr(opt.quick$par,
                      fn.wrap,
                      lower=unlist(lower.list),
                      upper=unlist(upper.list),
@@ -117,13 +132,14 @@ if(opt$convergence==0){
   #if we're smaller than the threshold return immediately
   if(opt$value  < return.value) break
 } else{
-  results[[degree]] <- NA
+  browser()
+  results[[degree]] <- opt
   values[[degree]] <- .Machine$double.xmax
 }
 
   }#end the for loop over degrees
 
-# browser()
+browser()
   degree <- which.min(values)
   opt <- results[[degree]]
 
