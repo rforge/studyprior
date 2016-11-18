@@ -15,7 +15,7 @@ conj.approx2 <- function(distr, type=c("beta","normal"), max.degree = 3, return.
 
   x <- rep(seq(range[1],range[2], length.out = length.fit), each=1)
   y <- distr(x) #+ rnorm(length(x), 0, 0.05)
-  dat <- data.frame(x,y)[-c(1:3,(length.fit-2):length.fit),]
+  dat <- data.frame(x,y)[-c(1,length.fit),]
 
   dat.quick <- data.frame(  x = rep(seq(range[1],range[2], length.out = length.fit), each=1),
                             y = distr(x))[-c(1:3,(23):25),]
@@ -55,7 +55,7 @@ conj.approx2 <- function(distr, type=c("beta","normal"), max.degree = 3, return.
     }
     #############################################################################
     lower.list <-  switch(type,
-                          "beta" = c(rep(0, degree), rep(1, length(params))),
+                          "beta" = c(rep(0.001, degree), rep(0.001, length(params))),
                           "normal" =c(rep(0, degree),rep(c(0,0),degree)))
 
     #############################################################################
@@ -90,9 +90,10 @@ conj.approx2 <- function(distr, type=c("beta","normal"), max.degree = 3, return.
                      control=list(trace=FALSE,
                                   maxit=3000)
       )
-    fn.wrap <-  function(PAR) sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
+    fn.wrap <-  function(PAR) min(sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
                                                                               pars=PAR[-(1:degree)],
-                                                                              weights=PAR[1:degree])))^2)
+                                                                              weights=PAR[1:degree])))^2),
+                                  99e300)
 
     # fn.wrap.x <-  function(PAR,x) sum((y-eval.fun.list(x, update.fun.list(fun.list = fl,
     #                                                                       pars=PAR[-(1:degree)],
