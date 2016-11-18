@@ -9,7 +9,7 @@
 #'
 #' @examples
 #'
-binom.PP.EB <- function(x, n, X, N, verbose=FALSE){
+binom.PP.EB <- function(x, n, X, N, verbose=FALSE, mc.cores=1){
   #if X isn't specified we calculate it for all, set flag too
   if(missing(X)) {
     X <- 0:N
@@ -17,7 +17,9 @@ binom.PP.EB <- function(x, n, X, N, verbose=FALSE){
   } else x.only=TRUE
 
  dists <-
-   lapply(X, function(X){
+   mclapply(mc.cores=mc.cores,
+            X,
+            function(X){
 
     n.hist <- length(x)
 
