@@ -21,7 +21,7 @@ binom.prior <- function(type = c("MAP.FB", "MAP.EB","PP.FB","PP.EB","PP.EB.Beta"
   f.to.call <- switch(type,
                       "MAP.FB" = binom.MAP.FB,
                       "MAP.EB" = binom.MAP.EB,
-                      "PP.FB" = binom.PP.FB.MC,
+                      "PP.FB" = binom.PP.FB.MC.BE,
                       "PP.EB" = binom.PP.EB,
                       "PP.EB.Beta" = binom.PP.EB.Beta,
                       "PP.EB.Sep" = binom.PP.EB.Sep,
