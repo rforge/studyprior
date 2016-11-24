@@ -1,11 +1,15 @@
 
 library(StudyPrior)
 
-set.seed(3)
-n <- sample(10:100, 10, replace = TRUE)
-z <- 0.6 + runif(10)/5
+# for(i in 1:100){
+  for(i in recalc){
+try({
+set.seed(300*i)
+N <- sample(6:10,1)
+n <- sample(50:100, N, replace = TRUE)
+z <- rnorm(N, 0.65, 0.1)
 x <- mapply(rbinom, size=n, n=1, prob=z)
-
+x/n
 Xs <- rbinom(1,100,0.6)
 Ns <- 200
 
@@ -18,40 +22,57 @@ F.PSP <- binom.prior("PP.EB.Sep", x = x, n=n, X=0:Ns, N=Ns)
 
 ## Approximations
 
-C.MFP <- list(conj.approx2(F.MFP, "beta", max.degree=4, return.value=0.1, length.fit = 300))
+C.MFP <- list(conj.approx2(F.MFP, "beta", max.degree=4, return.value=0.01, length.fit = 100))
 
 C.MFP <- C.MFP[rep(1,201)]
 
 C.MEP <- vector("list", length=201)
-C.MEP[[101]] <- conj.approx2(function(p) F.MEP(p,100), "beta",min.degree = 3, max.degree=3, return.value=0.05, length.fit = 200)
-
+C.MEP[[101]] <- conj.approx2(function(p) F.MEP(p,100), "beta", max.degree=4, return.value=0.05, length.fit = 100)
 
 for(X in 101:200){
-  starts <-  c(attr(C.MEP[[X]],"weights")[1:3],attr(C.MEP[[X]],"pars")[1:6])
+  starts <-  c(attr(C.MEP[[X]],"weights")[1:4],attr(C.MEP[[X]],"pars")[1:8])
   print(X)
-  # print(starts)
-  C.MEP[[X+1]] <- conj.approx2(function(p) F.MEP(p,X), "beta",min.degree = 3, max.degree=3, return.value=0.05, length.fit = 200, starts=starts)
+  print(starts)
+  C.MEP[[X+1]] <- conj.approx2(function(p) F.MEP(p,X), "beta", max.degree=4, return.value=0.05, length.fit = 100, starts=starts)
 }
 
 for(X in 100:0){
-  starts <-  c(attr(C.MEP[[X+2]],"weights")[1:3],attr(C.MEP[[X+2]],"pars")[1:6])
+  starts <-  c(attr(C.MEP[[X+2]],"weights")[1:4],attr(C.MEP[[X+2]],"pars")[1:8])
   print(X)
   # print(starts)
-  C.MEP[[X+1]] <- conj.approx2(function(p) F.MEP(p,X), "beta",min.degree = 3, max.degree=3, return.value=0.05, length.fit = 200, starts=starts)
+  C.MEP[[X+1]] <- conj.approx2(function(p) F.MEP(p,X), "beta", max.degree=4, return.value=0.05, length.fit = 100, starts=starts)
 }
 
-C.PFP <- list(conj.approx2(F.PFP, "beta", max.degree=4, return.value=0.1, length.fit = 300))
+C.PFP <- list(conj.approx2(F.PFP, "beta", max.degree=4, return.value=0.01, length.fit = 100))
 
 C.PFP <- C.PFP[rep(1,201)]
 
 
 C.PEP <- mclapply(mc.cores=30,0:200, function(X) {
-  conj.approx2(function(p) F.PEP(p,X), "beta", max.degree=4, return.value=0.1, length.fit = 300)})
+  conj.approx2(function(p) F.PEP(p,X), "beta", max.degree=4, return.value=0.01, length.fit = 100)})
 
 C.PSP <- mclapply(mc.cores=30,0:200, function(X) {
-  conj.approx2(function(p) F.PSP(p,X), "beta", max.degree=5, return.value=0.1, length.fit = 300)})
+  conj.approx2(function(p) F.PSP(p,X), "beta", max.degree=4, return.value=0.01, length.fit = 100)})
+
+
+save(F.MFP, F.MEP,F.PFP,F.PEP,F.PSP, n,x,
+     C.MFP, C.MEP,C.PFP,C.PEP,C.PSP,
+     file=paste0("5/c_study_5_models_",i,".rda"))
+
+})}
 
 ####################################################
+recalc <- numeric()
+for(i in 1:100){
+  if(!file.exists(file=paste0("5/c_study_5_models_",i,".rda"))) recalc <- c(recalc,i)
+}
+
+for(i in 1:100){
+  print(i)
+  load(file=paste0("5/c_study_5_models_",i,".rda"))
+  try({
+
+
 
 ESSMAT <-
   sapply(list(C.MFP,
@@ -114,9 +135,9 @@ cover <-  mclapply(list(C.MFP,
                         C.PSP),
                    function(pr) calc.coverage(prior=pr, level = 0.95, n.control = 200, smooth = 0.03), mc.cores=30)
 
-n.4 <- n
-x.4 <- x
-save(n.4, x.4, ess, bias,  cover, t1e, pow, mse,SIGMAT,  file="study_4.rda")
-save(F.MFP, F.MEP,F.PFP,F.PEP,F.PSP,
-     C.MFP, C.MEP,C.PFP,C.PEP,C.PSP,
-     file="Study4_models.rda")
+n.5 <- n
+x.5 <- x
+save(n.5, x.5, ess, bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("5/c_study_5_",i,".rda"))
+
+})
+}

@@ -19,20 +19,55 @@ F.PSP <- binom.prior("PP.EB.Sep", x = x, n=n, X=0:Ns, N=Ns)
 
 # Approximations
 
-C.MFP <- list(conj.approx2(F.MFP, "beta", max.degree=4, return.value=0.3, length.fit = 200))
+C.MFP <- list(conj.approx2(F.MFP, "beta", max.degree=3, return.value=0.05, length.fit = 200))
 C.MFP <- C.MFP[rep(1,201)]
 
-C.MEP <- mclapply(mc.cores=30,0:200, function(X) {
-  conj.approx2(function(p) F.MEP(p,X), "beta", max.degree=4, return.value=0.3, length.fit = 200)})
+C.MEP <- vector("list", length=201)
+s <- split(0:200, c(rep(1:4,each=50),4))
 
-C.PFP <- list(conj.approx2(F.PFP, "beta", max.degree=4, return.value=0.3, length.fit = 200))
+s[1:2] <- lapply(s[1:2],rev)
+
+z<- mclapply(mc.cores=10,
+             sapply(s,`[`,1),
+             function(X) conj.approx2(function(p) F.MEP(p,X), "beta",min.degree = 3, max.degree=3, return.value=0.05, length.fit = 200))
+
+C.MEP[sapply(s,`[`,1)+1] <- z
+
+ZZ<- mclapply(mc.cores=30,s, function(S,CM) {
+  sublist <- list()
+  sublist[[1]] <-  CM[[S[1]+1]]
+  for(i in 2:length(S)){
+    starts <-  c(attr(sublist[[i-1]],"weights")[1:3],attr(sublist[[i-1]],"pars")[1:6])
+    sublist[[i]] <- conj.approx2(function(p) F.MEP(p,S[i]), "beta",min.degree = 3, max.degree=3, return.value=0.05, length.fit = 200, starts=starts)
+
+  }
+  sublist
+}, CM=C.MEP)
+
+
+
+  for(X in 101:200){
+   starts <-  c(attr(C.MEP[[X]],"weights")[1:3],attr(C.MEP[[X]],"pars")[1:6])
+   print(X)
+   # print(starts)
+  C.MEP[[X+1]] <- conj.approx2(function(p) F.MEP(p,X), "beta",min.degree = 3, max.degree=3, return.value=0.05, length.fit = 200, starts=starts)
+  }
+
+for(X in 100:0){
+  starts <-  c(attr(C.MEP[[X+2]],"weights")[1:3],attr(C.MEP[[X+2]],"pars")[1:6])
+  print(X)
+  # print(starts)
+  C.MEP[[X+1]] <- conj.approx2(function(p) F.MEP(p,X), "beta",min.degree = 3, max.degree=3, return.value=0.05, length.fit = 200, starts=starts)
+}
+
+C.PFP <- list(conj.approx2(F.PFP, "beta", max.degree=3, return.value=0.05, length.fit = 200))
 C.PFP <- C.PFP[rep(1,201)]
 
 C.PEP <- mclapply(mc.cores=30,0:200, function(X) {
-  conj.approx2(function(p) F.PEP(p,X), "beta", max.degree=4, return.value=0.3, length.fit = 200)})
+  conj.approx2(function(p) F.PEP(p,X), "beta", max.degree=3, return.value=0.05, length.fit = 200)})
 
 C.PSP <- mclapply(mc.cores=30,0:200, function(X) {
-  conj.approx2(function(p) F.PSP(p,X), "beta", max.degree=4, return.value=0.3, length.fit = 200)})
+  conj.approx2(function(p) F.PSP(p,X), "beta", max.degree=3, return.value=0.05, length.fit = 200)})
 
 
 
