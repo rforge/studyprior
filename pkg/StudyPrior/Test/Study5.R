@@ -22,37 +22,37 @@ F.PSP <- binom.prior("PP.EB.Sep", x = x, n=n, X=0:Ns, N=Ns)
 
 ## Approximations
 
-C.MFP <- list(conj.approx2(F.MFP, "beta", max.degree=4, return.value=0.01, length.fit = 100))
+C.MFP <- list(conj.approx.robust(F.MFP, "beta", max.degree=4, return.value=0.01, length.fit = 100))
 
 C.MFP <- C.MFP[rep(1,201)]
 
 C.MEP <- vector("list", length=201)
-C.MEP[[101]] <- conj.approx2(function(p) F.MEP(p,100), "beta", max.degree=4, return.value=0.05, length.fit = 100)
+C.MEP[[101]] <- conj.approx.robust(function(p) F.MEP(p,100), "beta", max.degree=4, return.value=0.05, length.fit = 100)
 
 for(X in 101:200){
   starts <-  c(attr(C.MEP[[X]],"weights")[1:4],attr(C.MEP[[X]],"pars")[1:8])
   print(X)
   print(starts)
-  C.MEP[[X+1]] <- conj.approx2(function(p) F.MEP(p,X), "beta", max.degree=4, return.value=0.05, length.fit = 100, starts=starts)
+  C.MEP[[X+1]] <- conj.approx.robust(function(p) F.MEP(p,X), "beta", max.degree=4, return.value=0.05, length.fit = 100, starts=starts)
 }
 
 for(X in 100:0){
   starts <-  c(attr(C.MEP[[X+2]],"weights")[1:4],attr(C.MEP[[X+2]],"pars")[1:8])
   print(X)
   # print(starts)
-  C.MEP[[X+1]] <- conj.approx2(function(p) F.MEP(p,X), "beta", max.degree=4, return.value=0.05, length.fit = 100, starts=starts)
+  C.MEP[[X+1]] <- conj.approx.robust(function(p) F.MEP(p,X), "beta", max.degree=4, return.value=0.05, length.fit = 100, starts=starts)
 }
 
-C.PFP <- list(conj.approx2(F.PFP, "beta", max.degree=4, return.value=0.01, length.fit = 100))
+C.PFP <- list(conj.approx.robust(F.PFP, "beta", max.degree=4, return.value=0.01, length.fit = 100))
 
 C.PFP <- C.PFP[rep(1,201)]
 
 
 C.PEP <- mclapply(mc.cores=30,0:200, function(X) {
-  conj.approx2(function(p) F.PEP(p,X), "beta", max.degree=4, return.value=0.01, length.fit = 100)})
+  conj.approx.robust(function(p) F.PEP(p,X), "beta", max.degree=4, return.value=0.01, length.fit = 100)})
 
 C.PSP <- mclapply(mc.cores=30,0:200, function(X) {
-  conj.approx2(function(p) F.PSP(p,X), "beta", max.degree=4, return.value=0.01, length.fit = 100)})
+  conj.approx.robust(function(p) F.PSP(p,X), "beta", max.degree=4, return.value=0.01, length.fit = 100)})
 
 
 save(F.MFP, F.MEP,F.PFP,F.PEP,F.PSP, n,x,
