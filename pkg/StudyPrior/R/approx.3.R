@@ -97,7 +97,7 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
 
 
 
-    print(paste(degree, ": ", opt$value))
+    # print(paste(degree, ": ", opt$value))
 
     if(opt$convergence==0){
       results[[degree]] <- opt
