@@ -80,7 +80,7 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
         #   interval = c(0,upper),
         #   maximum = TRUE)
 
-         print(paste(X,mode_tau))
+         # print(paste(X,mode_tau))
       }
       # VXN <- ifelse(missing(VAR), var(log((x/n)/(1-x/n))), VAR)
       VXN <- mode_tau^2
