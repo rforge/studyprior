@@ -13,11 +13,11 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
   n.hist <- length(x)
   n.new <- 0
 
-  v <- verbose
+
 
  f <- mcmapply(mc.cores=mc.cores,
                X=X, N=N,
-    FUN=function(X,N, upper=upper, VAR=VAR, v=v){
+    FUN=function(X,N, upper=upper, VAR=VAR){
 
       if(!(missing(X)|missing(N))) {
         x <- c(x,X)
@@ -59,7 +59,7 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
                              # control.predictor = list(compute=TRUE, link=1)
                              # )
         ,
-        verbose = FALSE,
+        # verbose = FALSE,
         control.inla = list(int.strategy = "eb"))
 
         result <- INLA::inla.hyperpar(result)

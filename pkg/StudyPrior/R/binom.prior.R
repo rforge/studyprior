@@ -29,6 +29,6 @@ binom.prior <- function(type = c("MAP.FB", "MAP.EB","PP.FB","PP.EB","PP.EB.Beta"
                       )
 v <- verbose
 
-  do.call(f.to.call, args=list(x=x,n=n, verbose=v, ...))
+  do.call(f.to.call, args=alist(x=x,n=n, verbose=v, ...))
 
 }
