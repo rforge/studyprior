@@ -4,7 +4,7 @@
 \alias{binom.PP.EB}
 \title{Empirical Bayes Power Prior for Binomial Data}
 \usage{
-binom.PP.EB(x, n, X, N, verbose = FALSE)
+binom.PP.EB(x, n, X, N, verbose = FALSE, mc.cores = 1)
 }
 \arguments{
 \item{x}{historical events}

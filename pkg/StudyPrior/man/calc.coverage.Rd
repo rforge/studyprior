@@ -2,7 +2,7 @@
 % Please edit documentation in R/Coverage.R
 \name{calc.coverage}
 \alias{calc.coverage}
-\title{Coverage using prior using the Bayari thing}
+\title{Coverage using prior using the Bayarri thing}
 \usage{
 calc.coverage(prior, level, n.control, smooth, ...)
 }
@@ -10,6 +10,6 @@ calc.coverage(prior, level, n.control, smooth, ...)
 \item{length}{}
 }
 \description{
-Coverage using prior using the Bayari thing
+Coverage using prior using the Bayarri thing
 }
 

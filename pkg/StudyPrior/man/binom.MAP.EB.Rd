@@ -4,7 +4,7 @@
 \alias{binom.MAP.EB}
 \title{Empirical Bayes Meta-Analytic Prior for Binomial Data}
 \usage{
-binom.MAP.EB(x, n, X, N, verbose = FALSE, upper, VAR)
+binom.MAP.EB(x, n, X, N, verbose = FALSE, upper, VAR, mc.cores)
 }
 \arguments{
 \item{x}{historical events}
