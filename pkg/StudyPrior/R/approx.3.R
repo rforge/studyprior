@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, max.degree = 3, return.value=0.2, range=c(0,1), starts, length.fit=100, do.plot=FALSE){
+conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, max.degree = 3, return.value=0.2, range=c(0,1), starts, length.fit=100, do.plot=FALSE, robust=FALSE){
 
   x <- rep(seq(range[1],range[2], length.out = length.fit), each=1)
   y <- distr(x) #+ rnorm(length(x), 0, 0.05)
@@ -135,8 +135,9 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
   opt <- results[[id]]
   degree <- (1:max.degree)[id]
 
-
-  fl <- create.fun.list(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
+if(robust){
+  fl <- create.fun.list(type, pars=c(opt$par[-(1:degree)],1,1), weights=c(opt$par[1:degree],0.0001))
+} else fl <- create.fun.list(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
 
   if(do.plot) plot.fun.list(x, fl, stack=TRUE, lines.only=TRUE)
 
