@@ -46,7 +46,7 @@ binom.PP.EB <- function(x, n, X, N, verbose=FALSE, mc.cores=1){
     if(opd$convergence!=0) print(opd)
 
     d <- opd$par
-    print(d)
+    # print(d)
 
     f <- Vectorize(function(p) prod(mapply(ddbinom, x=x, size=n, delta=d, prob=p)))
     k <- integrate(f, 0,1)
