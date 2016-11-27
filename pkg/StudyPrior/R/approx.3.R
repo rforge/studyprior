@@ -64,7 +64,7 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
     #############################################################################
 
     upper.list <-  switch(type,
-                          "beta" = c(rep(1, degree), rep(500, length(params))),
+                          "beta" = c(rep(1, degree), rep(1000, length(params))),
                           "normal" =c(1/1:degree,rep(c(1,5),degree)))
 
     #############################################################################
@@ -113,7 +113,23 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
         )
     }
 
-
+    if(opt$convergence!=0){
+      start.rand <- mapply(runif, min=unlist(lower.list),max=unlist(upper.list), n=1)
+      opt <-
+        optimr::optimr(start.rand,
+                       function(PAR){
+                         sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
+                                                                         pars=PAR[-(1:degree)],
+                                                                         weights=PAR[1:degree])))^2)
+                       },
+                       lower=unlist(lower.list),
+                       upper=unlist(upper.list),
+                       method = "L-BFGS-B",
+                       # method = "Rvmmin",
+                       control=list(trace=3,
+                                    maxit=3000)
+        )
+    }
 
     # print(paste(degree, ": ", opt$value))
 
