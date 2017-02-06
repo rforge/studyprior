@@ -4,14 +4,15 @@
 \alias{binom.PP.EB}
 \title{Empirical Bayes Power Prior for Binomial Data}
 \usage{
-binom.PP.EB(x, n, X, N, verbose = FALSE, mc.cores = 1)
+binom.PP.EB(x, n, X, N, verbose = FALSE, mc.cores = 1, p.prior.a = 1,
+  p.prior.b = 1)
 }
 \arguments{
 \item{x}{historical events}
 
 \item{n}{historical trials}
 
-\item{tau.prior}{optional prior on heterogeneity parameter}
+\item{p.prior.b}{}
 }
 \value{
 A function of the probability parmater p

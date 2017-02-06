@@ -4,7 +4,8 @@
 \alias{binom.PP.FB}
 \title{Full Bayes Power Prior for Binomial Data}
 \usage{
-binom.PP.FB(x, n, verbose = FALSE, length = 30, dprior, mc.cores = 1)
+binom.PP.FB(x, n, verbose = FALSE, length = 30, dprior, mc.cores = 1,
+  p.prior.a = 1, p.prior.b = 1)
 }
 \arguments{
 \item{x}{historical events}

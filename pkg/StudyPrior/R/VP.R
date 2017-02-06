@@ -7,5 +7,6 @@
 #'
 #' @examples
 VP <- function(message){
-  # try( if(parent.frame()$verbose) print(message))
+  # if(parent.frame()$verbose)
+    print(message)
 }

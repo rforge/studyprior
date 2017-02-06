@@ -13,14 +13,17 @@
 #'
 
 sig.matrix <- function(n.control, n.treatment, level=0.975, prior, treat.beta.prior.par=c(1,1), mc.cores=1, check.xt, check.xs,debug=FALSE) {
-lapply
+
+  if(missing(check.xt)) check.xt <- 0:n.treatment
+  if(missing(check.xs)) check.xs <- 0:n.control
+
   ZZ.list <-   mclapply(check.xs,
     function(Xs){
       # print(Xs)
       post <-
         if(inherits(prior, "function")){
           post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.control, prob=p)/g
-          f <- splinefun(smooth.spline(seq(0,1,len=1000), pmax(0,post(seq(0,1,len=1000)))))
+          f <- splinefun(smooth.spline(seq(0.001,.999,len=1000), pmax(0,post(seq(0.001,.999,len=1000)))))
 
           K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
           function(p,g=K) f(p)/g

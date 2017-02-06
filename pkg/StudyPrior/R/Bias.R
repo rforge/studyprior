@@ -19,7 +19,7 @@ calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30){
 
     if(inherits(prior, "function")){
       post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.binom, prob=p)/g
-      f <- splinefun(smooth.spline(seq(0,1,len=1000), pmax(0,post(seq(0,1,len=1000)))))
+      f <- splinefun(smooth.spline(seq(0.001,.999,len=1000), pmax(0,post(seq(0.001,.999,len=1000)))))
       # print(Xs)
       K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
 

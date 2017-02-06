@@ -18,9 +18,11 @@ normal.PP.FB.MC <- function(x, sd, verbose=FALSE, length=30, d.prior.a=1, d.prio
 
   ddnorm <- function(x, mean, sd, delta) dnorm(x,mean,sd)^delta
 
-  cex <- function(d, x, sd) integrate(function(p) sapply(p, function(MEAN)
-    prod(mapply(ddnorm, x=x, sd=sd, delta=d, mean=MEAN))),
-    lower=-Inf,upper=Inf )
+  # cex <- function(d, x, sd) integrate(function(p) sapply(p, function(MEAN)
+  #   prod(mapply(ddnorm, x=x, sd=sd, delta=d, mean=MEAN))),
+  #   lower=-Inf,upper=Inf )
+
+
 
   p <- seq(min(x)-max(sd)*6, max(x)+max(sd)*6, len=length)
   if(!missing(focus)){
@@ -37,7 +39,7 @@ normal.PP.FB.MC <- function(x, sd, verbose=FALSE, length=30, d.prior.a=1, d.prio
 
     eval.f <- function(d){ #prod(dprior(d))*
       prod(mapply(ddnorm, x=x, sd=sd, delta=d, mean=MEAN))/
-      cex(d,x,sd)$value}
+      cex(d,x,sd)}
 
     mean(apply(
       matrix(rbeta(samples*n.hist,d.prior.a,d.prior.b),ncol=n.hist),
@@ -66,3 +68,24 @@ normal.PP.FB.MC <- function(x, sd, verbose=FALSE, length=30, d.prior.a=1, d.prio
   return(g)
 
 }
+
+
+cex <- function(d,x,sd){
+  n.hist <- length(x)
+  h <- seq(n.hist)
+  r <- 1/sd^2
+  exp.part <- 1/(-2*sum(d*r)) * sum(sapply(h, function(i) sum(d[i]*d[h[-i]]*r[i]*r[h[-i]]*(x[i]-x[h[-i]])^2)))
+  prod.part <- prod(sqrt(r/2/pi)^d)
+
+a <-   prod.part * sqrt(2*pi / sum(d*r)) * exp(exp.part)
+print(a)
+return(a)
+}
+
+#
+# cex2 <- function(d, x, sd) integrate(function(p) sapply(p, function(MEAN)
+#   prod(mapply(ddnorm, x=x, sd=sd, delta=d, mean=MEAN))),
+#   lower=-Inf,upper=Inf )
+#
+# cex(c(.4,1),c(1,1.4),c(.3,.1))
+# cex2(c(.4,1),c(1,1.4),c(.3,.1))

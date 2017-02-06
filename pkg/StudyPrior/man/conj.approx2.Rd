@@ -6,7 +6,7 @@
 \usage{
 conj.approx2(distr, type = c("beta", "normal"), min.degree = max.degree,
   max.degree = 3, return.value = 0.2, range = c(0, 1), starts,
-  length.fit = 100, do.plot = FALSE)
+  length.fit = 100, do.plot = FALSE, robust = FALSE)
 }
 \arguments{
 \item{length.fit}{}

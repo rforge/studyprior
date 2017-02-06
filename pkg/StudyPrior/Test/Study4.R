@@ -12,6 +12,8 @@ Ns <- 200
 F.MFP <- binom.prior("MAP.FB", x = x, n=n)
 F.MEP <- binom.prior("MAP.EB", x = x, n=n, X=0:Ns, N=Ns, mc.cores=30)
 F.PFP <- binom.prior("PP.FB", x = x, n=n, samples=5000, length=100, mc.cores=30)
+F.PJP <- binom.PP.FB.MC.BE(x,n,d.prior.a = .5,d.prior.b = 5,samples=5000, length=100, mc.cores=30)
+
 ## With feedback
 F.PEP <- binom.prior("PP.EB", x = x, n=n, X=0:Ns, N=Ns, verbose=TRUE, mc.cores=30)
 F.PSP <- binom.prior("PP.EB.Sep", x = x, n=n, X=0:Ns, N=Ns)

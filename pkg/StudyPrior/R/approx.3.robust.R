@@ -50,12 +50,12 @@ conj.approx.robust <- function(distr, type=c("beta","normal"), min.degree=max.de
 
     fudge <- if(mode.d!=0) round(1/mode.d) else 1
 
-    if(missing(starts)){
+    # if(missing(starts)){
       start.list[-c(1:degree)] <-
         switch(type,
                "beta" = c(rbind(mode.d*(fudge+1:degree)/(1-mode.d), fudge + 1:degree)),
                "normal" = c(rbind(mode.d+rnorm(degree,0,0.1),1:degree/degree/10 )))
-    } else start.list <- starts
+    # } else start.list <- starts
     #############################################################################
     lower.list <-  switch(type,
                           "beta" = c(rep(0.0075, degree), rep(0.001, length(params))),
@@ -80,12 +80,14 @@ conj.approx.robust <- function(distr, type=c("beta","normal"), min.degree=max.de
 
 
 
+    if(missing(starts)) starts <- start.list
+
     opt <-
-      optimr::optimr(unlist(start.list),
+      optimr::optimr(unlist(starts),
                      function(PAR){
                        sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
-                                                                                   pars=PAR[-(1:degree)],
-                                                                                   weights=PAR[1:degree])))^2)
+                                                                       pars=PAR[-(1:degree)],
+                                                                       weights=PAR[1:degree])))^2)
                      },
                      lower=unlist(lower.list),
                      upper=unlist(upper.list),
@@ -95,9 +97,25 @@ conj.approx.robust <- function(distr, type=c("beta","normal"), min.degree=max.de
                                   maxit=3000)
       )
 
+    if(opt$convergence!=0){
+
+      opt <-
+        optimr::optimr(unlist(start.list),
+                       function(PAR){
+                         sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
+                                                                         pars=PAR[-(1:degree)],
+                                                                         weights=PAR[1:degree])))^2)
+                       },
+                       lower=unlist(lower.list),
+                       upper=unlist(upper.list),
+                       method = "L-BFGS-B",
+                       # method = "Rvmmin",
+                       control=list(trace=3,
+                                    maxit=3000)
+        )
+    }
 
 
-    print(paste(degree, ": ", opt$value))
 
     if(opt$convergence==0){
       results[[degree]] <- opt

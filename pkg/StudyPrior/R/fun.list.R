@@ -249,8 +249,10 @@ sample.fun.list <- function(n, fun.list){
 #' @examples
 q.fun.list <- function(p, fun.list){
   sapply(p, function(p){
-    optimise( function(q){(p.fun.list(q,fun.list)-p)^2},
-              interval=c(0,1))$minimum
+    # optimise( function(q){(p.fun.list(q,fun.list)-p)^2},
+              # interval=c(0,1))$minimum
+    uniroot(function(q) (p.fun.list(q,fun.list)-p),
+            interval=c(0,1))$root
   })
 }
 

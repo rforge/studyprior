@@ -28,23 +28,26 @@ B<-1
   prior.table = paste(c("table:", cbind(lprec, prior.function(lprec))),
                       sep = "", collapse = " ")
 
-  Y <- matrix(NA,n.hist+1+1, n.hist+1+1)
-  diag(Y) <-c(x/n,0.5, X/N) #-log(1/c(x/n,0.5)-1)
+  # Y <- matrix(NA,n.hist+1+1, n.hist+1+1)
+  Y <- matrix(NA,n.hist,n.hist)#+1, n.hist+1)
+  diag(Y) <-c(x/n)#, X/N) #-log(1/c(x/n,0.5)-1)
 
 
-  fam <- rep("beta", n.hist+1+1)
-  con.fam <- c(rep(list(list(hyper=list(theta=list(prior=prior.table, initial=log(.1) )))), n.hist),
-               list(list(hyper=(list(theta=list(fixed=TRUE, initial=1))))),
-               list(list(hyper=(list(theta=list(fixed=TRUE, initial=1))))))
+  fam <- rep("beta", n.hist)#+1)# +1)
+  con.fam <- c(rep(list(list(hyper=list(theta=list(prior=prior.table, initial=log(.1) )))), n.hist)
+               # ,
+               # list(list(hyper=(list(theta=list(fixed=TRUE, initial=0)))))
+               )
+  # ,               list(list(hyper=(list(theta=list(fixed=TRUE, initial=0))))))
 
-  sca <- c(n, n.hist,N)
+  sca <- c(n)#, 2*n.hist+2)#,N)
 
   ifb <- inla(Y~1,
               data=list(Y=Y),
               family=fam,
               scale= sca,
               control.family = con.fam,
-              control.inla = list(strategy='laplace', int.strategy='grid'),
+              control.inla = list(strategy='laplace', int.strategy='eb'),
               verbose=TRUE)
 
   summary(ifb)

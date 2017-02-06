@@ -5,12 +5,17 @@
 \title{Title}
 \usage{
 binom.PP.FB.MC.BE(x, n, verbose = FALSE, length = 30, d.prior.a = 1,
-  d.prior.b = 1, mc.cores = 1, samples = 10000, focus)
+  d.prior.b = 1, p.prior.a = 1, p.prior.b = 1, mc.cores = 1,
+  samples = 10000, focus)
 }
 \arguments{
 \item{d.prior.a}{shape1 parameter for beta prior on weight}
 
 \item{d.prior.b}{shape2 parameter for beta prior on weight}
+
+\item{p.prior.a}{shape1 parameter for beta prior on probability}
+
+\item{p.prior.b}{shape2 parameter for beta prior on probability}
 
 \item{focus}{}
 }

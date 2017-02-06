@@ -10,18 +10,26 @@
 #' @examples
 calc.coverage <- function(prior, level, n.control, smooth, ...){
 
+  CI.mat <- calc.cis(prior, level, n.control)
 
+  plot.coverage(confidence.intervals = CI.mat,
+                smooth=smooth,
+                prob = level, ...)
+
+}
+
+
+calc.cis <- function(prior, level, n.control){
   CIs <-  sapply(0:n.control, function(Xs){
-
-
-      if(inherits(prior,"function")){
+    if(inherits(prior,"function")){
       post <- function(p,k=1) prior(p, X=Xs)*dbinom(x=Xs, size=n.control, prob=p)/k
+      f <- splinefun(smooth.spline(seq(0.0001,0.9999,len=1000), pmax(0,post(seq(.001,.999,len=1000)))))
       # print(Xs)
-      K <- integrate(post, lower=0, upper=1)$value
+      K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
 
       # get the confidence intervals
-      P <- seq(0,1,length.out = 1024)
-      marg <- list(x=P, y=post(P))
+      P <- seq(0.00001,.99999,length.out = 1024)
+      marg <- list(x=P, y=post(P, K))
       CI <- inla.hpdmarginal(level, marg)
 
       # apply the smoothing
@@ -36,13 +44,8 @@ calc.coverage <- function(prior, level, n.control, smooth, ...){
 
 
   })
-  CI.mat <- as.matrix(t(CIs))
-  plot.coverage(confidence.intervals = CI.mat,
-                smooth=smooth,
-                prob = level, ...)
-
+  as.matrix(t(CIs))
 }
-
 
 plot.coverage <- function(confidence.intervals,dx,dn, # Matrix mit 2 Spalten, die die unteren
                           # und oberen Intervallgrenzen enthaelt und Zeilenzahl n+1 hat.
@@ -80,15 +83,15 @@ plot.coverage <- function(confidence.intervals,dx,dn, # Matrix mit 2 Spalten, di
   #   coverage.probs = c(coverage.probs)[-1]#, rev(coverage.probs)[-1])
   # zeichnen
   if(do.plot){
-  if(!add){
-    plot(pvector, coverage.probs, type = "l", xlab = expression(paste("True ", pi)),
-         ylab = "Coverage probability", col = "darkgrey", ...)
-    abline(h = prob, lty = 2)
-  }
-  else
-  {
-    lines(pvector, coverage.probs, type = "l", col = "darkgrey", ...)
-  }}
+    if(!add){
+      plot(pvector, coverage.probs, type = "l", xlab = expression(paste("True ", pi)),
+           ylab = "Coverage probability", col = "darkgrey", ...)
+      abline(h = prob, lty = 2)
+    }
+    else
+    {
+      lines(pvector, coverage.probs, type = "l", col = "darkgrey", ...)
+    }}
   # evtl. Smooth einzeichnen (vgl. Bayarri und Berger)
   if(!is.null(smooth)){
     # allgemeine a-Funktion

@@ -9,7 +9,7 @@
 #'
 #' @examples
 #'
-binom.PP.FB <- function(x, n, verbose=FALSE, length=30, dprior, mc.cores=1){
+binom.PP.FB <- function(x, n, verbose=FALSE, length=30, dprior, mc.cores=1,  p.prior.a=1, p.prior.b=1){
   n.hist <- length(x)
 
   ddbinom <- function(x, size, prob, delta) dbinom(x,size,prob)^delta
