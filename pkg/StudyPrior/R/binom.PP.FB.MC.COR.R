@@ -15,8 +15,10 @@
 #' @return
 #' @export
 #'
+#' @importFrom mvtnorm rmvnorm
+#'
 #' @examples
-binom.PP.FB.MC.BE <- function(x, n, verbose=FALSE, length=30, d.prior.a=1, d.prior.b=1, p.prior.a=1, p.prior.b=1, mc.cores=1, samples=10000, focus ){
+binom.PP.FB.MC.COR <- function(x, n, verbose=FALSE, length=30, d.prior.cor=0, p.prior.a=1, p.prior.b=1, mc.cores=1, samples=10000, focus ){
   n.hist <- length(x)
 
   #Where to calculate density at
@@ -33,18 +35,27 @@ binom.PP.FB.MC.BE <- function(x, n, verbose=FALSE, length=30, d.prior.a=1, d.pri
 
     eval.f <- function(d) dbeta(PROB, p.prior.a+sum(d*x), p.prior.b+sum(d*(n-x)))
 
+    #correlation matrix
+    sigma <- matrix(d.prior.cor, ncol=n.hist, nrow = n.hist)
+    diag(sigma) <- rep(1, n.hist)
+
     mean(apply(
-      matrix(rbeta(samples*n.hist, d.prior.a, d.prior.b),ncol=n.hist),
+      pnorm(rmvnorm(samples, mean=rep(0,n.hist), sigma=sigma)),
       1,eval.f))
   },mc.cores=mc.cores)
 
-  f <- splinefun(smooth.spline(x=p, y=dens))
+  dens2 <- density(rep(p,unlist(dens)*10000),from=0,to=1, bw=.02)
+  # f <- splinefun(smooth.spline(x=p, y=pmax(dens,0)))
 
-  k <- integrate(f, 0,1)$value
 
-  f <- splinefun(x=p, y=unlist(dens)/k)
+  # k <- integrate(f, 0,1)$value
 
-  g <- function(p,X) ifelse(0<=p&p<=1, f(p),0)
+  # f <- splinefun(x=p, y=unlist(dens)/k)
+
+  # g <- function(p,X) ifelse(0<=p&p<=1, f(p),0)
+
+  g <- approxfun(dens2, yleft=0, yright=0)
+  formals(g) <- alist(v=,...=)
 
   return(g)
 

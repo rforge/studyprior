@@ -15,7 +15,7 @@ binom.PP.FB <- function(x, n, verbose=FALSE, length=30, dprior, mc.cores=1,  p.p
   ddbinom <- function(x, size, prob, delta) dbinom(x,size,prob)^delta
 
   cex <- function(d, x, n) integrate(function(p) sapply(p, function(PROB)
-    prod(mapply(ddbinom, x=x, size=n, delta=d, prob=PROB))),
+    prod(mapply(ddbinom, x=x, size=n, delta=d, prob=PROB))*dbeta(PROB, p.prior.a,p.prior.b)),
     lower=0,upper=1 )
 
   p <- seq(0, 1, len=length)
@@ -25,7 +25,7 @@ binom.PP.FB <- function(x, n, verbose=FALSE, length=30, dprior, mc.cores=1,  p.p
   dens <-parallel::mclapply(p, function(PROB, verbose){
     VP(PROB)
     cubature::adaptIntegrate(function(d) prod(dprior(d))*
-                     prod(mapply(ddbinom, x=x, size=n, delta=d, prob=PROB))/
+                     prod(mapply(ddbinom, x=x, size=n, delta=d, prob=PROB))*dbeta(PROB, p.prior.a,p.prior.b)/
                      cex(d,x,n)$value,
                    lower=rep(0, n.hist),
                    upper=rep(1, n.hist),

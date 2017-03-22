@@ -1,5 +1,5 @@
 
-#' Title
+#' Calculate a matrix of significance test results for all possible values
 #'
 #' @param n.control Number of subjects in the control group
 #' @param n.treatment
@@ -12,7 +12,7 @@
 #' @export
 #'
 
-sig.matrix <- function(n.control, n.treatment, level=0.975, prior, treat.beta.prior.par=c(1,1), mc.cores=1, check.xt, check.xs,debug=FALSE) {
+sig.matrix <- function(n.control, n.treatment, level=0.975, prior, posterior, treat.beta.prior.par=c(1,1), mc.cores=1, check.xt, check.xs,debug=FALSE) {
 
   if(missing(check.xt)) check.xt <- 0:n.treatment
   if(missing(check.xs)) check.xs <- 0:n.control
@@ -21,21 +21,22 @@ sig.matrix <- function(n.control, n.treatment, level=0.975, prior, treat.beta.pr
     function(Xs){
       # print(Xs)
       post <-
-        if(inherits(prior, "function")){
-          post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.control, prob=p)/g
-          f <- splinefun(smooth.spline(seq(0.001,.999,len=1000), pmax(0,post(seq(0.001,.999,len=1000)))))
+        if(missing(posterior)){
+          if(inherits(prior, "function")){
+            post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.control, prob=p)/g
+            f <- splinefun(smooth.spline(seq(0.001,.999,len=1000), pmax(0,post(seq(0.001,.999,len=1000)))))
 
-          K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
-          function(p,g=K) f(p)/g
-          # formals(post) <- alist(p = , g = K)
-          # K <- K *integrate(post, lower=0, upper=1)$value
-        } else if(inherits(prior, "mixture.list")){
-          post.list <- posterior.fun.list(Xs, n.control, prior)
-          function(p) eval.fun.list(p, post.list)
-        } else if(inherits(prior, "list")){
-          post.list <- posterior.fun.list(Xs, n.control, prior[[Xs+1]])
-          function(p) eval.fun.list(p, post.list)
-        }
+            K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
+            function(p,g=K) f(p)/g
+            # formals(post) <- alist(p = , g = K)
+            # K <- K *integrate(post, lower=0, upper=1)$value
+          } else if(inherits(prior, "mixture.list")){
+            post.list <- posterior.fun.list(Xs, n.control, prior)
+            function(p) eval.fun.list(p, post.list)
+          } else if(inherits(prior, "list")){
+            post.list <- posterior.fun.list(Xs, n.control, prior[[Xs+1]])
+            function(p) eval.fun.list(p, post.list)
+        }} else if(!missing(posterior)) posterior[[Xs+1]]
     ZZ <-unlist(lapply(check.xt, function(xT){
       # print(paste0('.',xT))
       res <-  try({

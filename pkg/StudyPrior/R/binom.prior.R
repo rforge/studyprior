@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-binom.prior <- function(type = c("MAP.FB", "MAP.EB","PP.FB","PP.EB","PP.EB.Beta","Beta.EB","PP.EB.Sep"),
+binom.prior <- function(type = c("MAP.FB", "MAP.EB","PP.FB","PP.EB","PP.EB.Beta","Beta.EB","PP.EB.Sep", "PP.Fix","PP.Cor"),
                         x, n,
                         verbose=FALSE,
                         ...){
@@ -25,6 +25,8 @@ binom.prior <- function(type = c("MAP.FB", "MAP.EB","PP.FB","PP.EB","PP.EB.Beta"
                       "PP.EB" = binom.PP.EB,
                       "PP.EB.Beta" = binom.PP.EB.Beta,
                       "PP.EB.Sep" = binom.PP.EB.Sep,
+                      "PP.Fix" = binom.PP.FIX,
+                      "PP.Cor" = binom.PP.FB.MC.COR,
                       "Beta.EB" = binom.Beta.EB
                       )
 v <- verbose

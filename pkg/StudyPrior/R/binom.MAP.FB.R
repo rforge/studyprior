@@ -3,11 +3,11 @@
 #' @param x historical events
 #' @param n historical trials
 #' @param tau.prior optional prior on heterogeneity parameter
+#' @param verbose
 #'
 #' @return A function of the probability parmater p
 #' @export
 #'
-#' @examples
 #'
 binom.MAP.FB <- function(x, n, tau.prior, verbose=FALSE){
   n.hist <- length(x)

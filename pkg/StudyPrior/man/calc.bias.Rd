@@ -4,7 +4,8 @@
 \alias{calc.bias}
 \title{Calculate bias}
 \usage{
-calc.bias(prior, prob.range = c(0.5, 1), length = 20, n.binom = 30)
+calc.bias(prior, prob.range = c(0.5, 1), length = 20, n.binom = 30,
+  posterior)
 }
 \arguments{
 \item{n.binom}{}

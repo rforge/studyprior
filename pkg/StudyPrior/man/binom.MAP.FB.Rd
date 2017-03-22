@@ -12,14 +12,13 @@ binom.MAP.FB(x, n, tau.prior, verbose = FALSE)
 \item{n}{historical trials}
 
 \item{tau.prior}{optional prior on heterogeneity parameter}
+
+\item{verbose}{}
 }
 \value{
 A function of the probability parmater p
 }
 \description{
 Full Bayesian Meta-Analytic Prior for Binomial Data
-}
-\examples{
-
 }
 

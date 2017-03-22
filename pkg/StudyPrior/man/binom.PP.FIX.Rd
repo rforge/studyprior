@@ -4,7 +4,7 @@
 \alias{binom.PP.FIX}
 \title{Fixed Weight Power Prior for Binomial Data}
 \usage{
-binom.PP.FIX(x, n, d, p.prior.a = 1, p.prior.b = 1)
+binom.PP.FIX(x, n, d, p.prior.a = 1, p.prior.b = 1, verbose)
 }
 \arguments{
 \item{x}{historical events}

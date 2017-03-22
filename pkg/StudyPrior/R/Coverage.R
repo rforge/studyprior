@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-calc.coverage <- function(prior, level, n.control, smooth, ...){
+calc.coverage <- function(prior, level, n.control, smooth, posterior, ...){
 
   CI.mat <- calc.cis(prior, level, n.control)
 
@@ -20,31 +20,46 @@ calc.coverage <- function(prior, level, n.control, smooth, ...){
 
 
 calc.cis <- function(prior, level, n.control){
-  CIs <-  sapply(0:n.control, function(Xs){
-    if(inherits(prior,"function")){
-      post <- function(p,k=1) prior(p, X=Xs)*dbinom(x=Xs, size=n.control, prob=p)/k
-      f <- splinefun(smooth.spline(seq(0.0001,0.9999,len=1000), pmax(0,post(seq(.001,.999,len=1000)))))
-      # print(Xs)
-      K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
 
-      # get the confidence intervals
-      P <- seq(0.00001,.99999,length.out = 1024)
-      marg <- list(x=P, y=post(P, K))
-      CI <- inla.hpdmarginal(level, marg)
+  if(missing(posterior)){
+    CIs <-  sapply(0:n.control, function(Xs){
+      if(inherits(prior,"function")){
+        post <- function(p,k=1) prior(p, X=Xs)*dbinom(x=Xs, size=n.control, prob=p)/k
+        f <- splinefun(smooth.spline(seq(0.0001,0.9999,len=1000), pmax(0,post(seq(.001,.999,len=1000)))))
+        # print(Xs)
+        K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
 
-      # apply the smoothing
-      return(CI)
-    } else if (inherits(prior,"mixture.list")){
-      q.fun.list(c((1-level)/2,1-(1-level)/2), posterior.fun.list(Xs, n.control, prior))
+        # get the confidence intervals
+        P <- seq(0.00001,.99999,length.out = 1024)
+        marg <- list(x=P, y=post(P, K))
+        CI <- inla.hpdmarginal(level, marg)
 
-    } else if (inherits(prior,"list")){
-      # post <-function(p) eval.fun.list(p, posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
-      q.fun.list(c((1-level)/2,1-(1-level)/2),posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
-    }
+        # apply the smoothing
+        return(CI)
+      } else if (inherits(prior,"mixture.list")){
+        q.fun.list(c((1-level)/2,1-(1-level)/2), posterior.fun.list(Xs, n.control, prior))
+
+      } else if (inherits(prior,"list")){
+        # post <-function(p) eval.fun.list(p, posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
+        q.fun.list(c((1-level)/2,1-(1-level)/2),posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
+      }
 
 
-  })
-  as.matrix(t(CIs))
+    })
+    as.matrix(t(CIs))
+  }  else if(!missing(posterior)){
+    CIs <- sapply(posterior, function(post){
+
+      lowerp <- function(P) adaptIntegrate(post, lowerLimit = 0, upperLimit = P)$integral
+      upperp <- function(P) adaptIntegrate(post, lowerLimit = P, upperLimit = 1)$integral
+
+      c(
+        optimise(function(P) (lowerp(P)-(1-level)/2)^2, interval=c(0,1))$minimum,
+        optimise(function(P) (upperp(P)-(1-level)/2)^2, interval=c(0,1))$minimum
+        )
+    })
+    as.matrix(t(CIs))
+  }
 }
 
 plot.coverage <- function(confidence.intervals,dx,dn, # Matrix mit 2 Spalten, die die unteren

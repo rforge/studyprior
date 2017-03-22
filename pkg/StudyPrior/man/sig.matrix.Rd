@@ -2,9 +2,9 @@
 % Please edit documentation in R/sig.matrix.R
 \name{sig.matrix}
 \alias{sig.matrix}
-\title{Title}
+\title{Calculate a matrix of significance test results for all possible values}
 \usage{
-sig.matrix(n.control, n.treatment, level = 0.975, prior,
+sig.matrix(n.control, n.treatment, level = 0.975, prior, posterior,
   treat.beta.prior.par = c(1, 1), mc.cores = 1, check.xt, check.xs,
   debug = FALSE)
 }
@@ -23,6 +23,6 @@ sig.matrix(n.control, n.treatment, level = 0.975, prior,
 A matrix of TRUE/FALSE values of size n.control+1 x n.treatment+1
 }
 \description{
-Title
+Calculate a matrix of significance test results for all possible values
 }
 

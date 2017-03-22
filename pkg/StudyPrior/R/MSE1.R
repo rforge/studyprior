@@ -11,16 +11,13 @@
 #' @export
 #'
 #' @examples
-calc.MSE <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.cores=1){
+calc.MSE <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.cores=1, posterior){
 
   P <- seq(prob.range[1],prob.range[2],len=length)
 
 
-
-
-  MSE.for.x <- parallel::mclapply(0:n.binom, function(Xs){
-
-
+  if(missing(posterior)){
+    MSE.for.x <- parallel::mclapply(0:n.binom, function(Xs){
       if(inherits(prior, "function")){
         post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.binom, prob=p)/g
         f <- splinefun(smooth.spline(seq(0.001,0.999,len=1000), pmax(0,post(seq(.001,.999,len=1000)))))
@@ -42,9 +39,15 @@ calc.MSE <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.cores=
       }
 
 
-  }, mc.cores = mc.cores)
+    }, mc.cores = mc.cores)
+  } else if(!missing(posterior)){
+    MSE.for.x <- parallel::mclapply(posterior, function(post){
+        sq.err <- function(p, true.p) post(p) * (p-true.p)^2
+        return(sapply(P, function(true.p){
+          adaptIntegrate(sq.err,0,1, true.p=true.p, maxEval=2e5)$integral})
+        )}, mc.cores = mc.cores)
+  }
 
-  # return(MSE.for.x)
 
   MSE.for.x <- matrix(unlist(MSE.for.x), nrow=length)
 

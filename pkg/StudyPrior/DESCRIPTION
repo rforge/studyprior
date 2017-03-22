@@ -14,7 +14,8 @@ Imports:
     optimr,
     VGAM,
     minpack.lm,
-    BB
+    BB,
+    mvtnorm
 Depends:
     INLA,
     parallel,

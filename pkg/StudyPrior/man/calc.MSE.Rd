@@ -5,7 +5,7 @@
 \title{Calculate mean squared error}
 \usage{
 calc.MSE(prior, prob.range = c(0.5, 1), length = 20, n.binom = 30,
-  mc.cores = 1)
+  mc.cores = 1, posterior)
 }
 \arguments{
 \item{n.binom}{}
