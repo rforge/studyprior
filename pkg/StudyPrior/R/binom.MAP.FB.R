@@ -48,10 +48,27 @@ binom.MAP.FB <- function(x, n, tau.prior, verbose=FALSE){
   A <- result$marginals.fitted.values[[n.hist+1]][,1]
   B <- result$marginals.fitted.values[[n.hist+1]][,2]
 
-  formals(f) <- list(x=NULL,
-                     marginal=list(x=A,y=B),
-                     log=FALSE)
 
-  g <- function(p,X) f(p)
+  f <- INLA:::inla.sfmarginal(inla.smarginal(marginal=list(x=A,y=B)))
+
+
+  g <- function (p)
+  {
+
+    n = length(p)
+    d = numeric(n)
+    for (i in 1:n) {
+      if (p[i] >= f$range[1] && p[i] <= f$range[2]) {
+         d[i] = exp(f$fun(p[i]))
+      }
+      else {
+        d[i] = 0
+      }
+    }
+    return(d)
+  }
+
+
+  h <- function(p,X) g(p)
   return(g)
 }

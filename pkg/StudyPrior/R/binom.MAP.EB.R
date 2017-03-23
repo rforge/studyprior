@@ -112,12 +112,23 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
       A <- resultEB$marginals.fitted.values[[n.hist+1]][!ind,1]
       B <- resultEB$marginals.fitted.values[[n.hist+1]][!ind,2]
 
-      f <- INLA::inla.dmarginal
+      f <- INLA:::inla.sfmarginal(inla.smarginal(marginal=list(x=A,y=B)))
 
-      formals(f) <- list(x=NULL,
-                         marginal=list(x=A,y=B),
-                         log=FALSE)
-      f
+
+      function(p)
+      {
+        n = length(p)
+        d = numeric(n)
+        for (i in 1:n) {
+          if (p[i] >= f$range[1] && p[i] <= f$range[2]) {
+            d[i] = exp(f$fun(p[i]))
+          }
+          else {
+            d[i] = 0
+          }
+        }
+        return(d)
+      }
 })
 
   g <- function(p,X) f[[X+1]](p)
