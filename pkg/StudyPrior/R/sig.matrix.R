@@ -17,11 +17,13 @@ sig.matrix <- function(n.control, n.treatment, level=0.975, prior, posterior, tr
   if(missing(check.xt)) check.xt <- 0:n.treatment
   if(missing(check.xs)) check.xs <- 0:n.control
 
+  use.posterior = !missing(posterior)
+
   ZZ.list <-   mclapply(check.xs,
     function(Xs){
       # print(Xs)
       post <-
-        if(missing(posterior)){
+        if(!use.posterior){
           if(inherits(prior, "function")){
             post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.control, prob=p)/g
             f <- splinefun(smooth.spline(seq(0.001,.999,len=1000), pmax(0,post(seq(0.001,.999,len=1000)))))
@@ -36,15 +38,16 @@ sig.matrix <- function(n.control, n.treatment, level=0.975, prior, posterior, tr
           } else if(inherits(prior, "list")){
             post.list <- posterior.fun.list(Xs, n.control, prior[[Xs+1]])
             function(p) eval.fun.list(p, post.list)
-        }} else if(!missing(posterior)) posterior[[Xs+1]]
-    ZZ <-unlist(lapply(check.xt, function(xT){
+        }} else if(use.posterior) posterior[[Xs+1]]
+    ZZ <-unlist(
+      lapply(check.xt, function(xT){
       # print(paste0('.',xT))
       res <-  try({
         if(debug ) browser()
 
         unsure <- TRUE
         #start quick and dirty
-        tol <- 0.05
+        tol <- 0.06
 
         this.int <- NA
 
@@ -76,7 +79,7 @@ sig.matrix <- function(n.control, n.treatment, level=0.975, prior, posterior, tr
           if( (this.int - this.int.res$abs.error) < level & (this.int + this.int.res$abs.error)  > level){
             # print("We were very close! Trying again -------------------")
             # print(this.int)
-            tol <- tol/5
+            tol <- tol/3
             # print(paste0("Tol: ",tol))
           } else {
             unsure <- FALSE
@@ -88,7 +91,9 @@ sig.matrix <- function(n.control, n.treatment, level=0.975, prior, posterior, tr
       })
       if(inherits(res,"try-error")) browser()#save(xT, post, file=paste0('ERROR-2-',Xs,'-',xT,'.Rda'))
       return(res)
-    }) )
+    }
+    # , mc.cores=mc.cores, mc.preschedule = FALSE
+    ) )
 
     # print(ZZ)
 # browser()
