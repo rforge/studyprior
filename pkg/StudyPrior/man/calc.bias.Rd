@@ -5,7 +5,7 @@
 \title{Calculate bias}
 \usage{
 calc.bias(prior, prob.range = c(0.5, 1), length = 20, n.binom = 30,
-  posterior)
+  posterior, mc.cores = 1)
 }
 \arguments{
 \item{n.binom}{}

@@ -51,7 +51,7 @@ binom.MAP.FB <- function(x, n, tau.prior, verbose=FALSE){
   rm(dat, formula, n, n.hist, prior, result, tau.prior, verbose, x)
 
 
-   function(p,x) {
+   function(p,X) {
     dens <- rep(0,length(p))
     i <- which(0<p&p<1)
     dens[i] <- f(p[i])

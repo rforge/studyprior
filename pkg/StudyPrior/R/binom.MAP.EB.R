@@ -137,10 +137,10 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
 
  rm(x,n,X,N,VAR, n.hist, n.new, upper, verbose, mc.cores)
 
- function(p,x) {
+ function(p,X) {
    dens <- rep(0,length(p))
    i <- which(0<p&p<1)
-   dens[i] <- splinefun(f[1,x][[1]], f[2,x][[1]])(p[i])
+   dens[i] <- splinefun(f[1,X+1][[1]], f[2,X+1][[1]])(p[i])
    dens
  }
 }
