@@ -43,32 +43,19 @@ binom.MAP.FB <- function(x, n, tau.prior, verbose=FALSE){
 #
 # f <- eval(parse(text=fun.string))
 
-  f <- inla.dmarginal
-
-  A <- result$marginals.fitted.values[[n.hist+1]][,1]
-  B <- result$marginals.fitted.values[[n.hist+1]][,2]
 
 
-  f <- INLA:::inla.sfmarginal(inla.smarginal(marginal=list(x=A,y=B)))
+ f <-  splinefun(result$marginals.fitted.values[[n.hist+1]][,1],
+                 result$marginals.fitted.values[[n.hist+1]][,2])
+
+  rm(dat, formula, n, n.hist, prior, result, tau.prior, verbose, x)
 
 
-  g <- function (p)
-  {
-
-    n = length(p)
-    d = numeric(n)
-    for (i in 1:n) {
-      if (p[i] >= f$range[1] && p[i] <= f$range[2]) {
-         d[i] = exp(f$fun(p[i]))
-      }
-      else {
-        d[i] = 0
-      }
-    }
-    return(d)
+   function(p,x) {
+    dens <- rep(0,length(p))
+    i <- which(0<p&p<1)
+    dens[i] <- f(p[i])
+    dens
   }
 
-
-  h <- function(p,X) g(p)
-  return(g)
 }

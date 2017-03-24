@@ -134,24 +134,13 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
       }
 })
 
- # return(f)
-#
-#  g.env <- new.env()
-#  g.env$f <- f
 
  rm(x,n,X,N,VAR, n.hist, n.new, upper, verbose, mc.cores)
 
- assign('g', function(p,x) {
+ function(p,x) {
    dens <- rep(0,length(p))
    i <- which(0<p&p<1)
    dens[i] <- splinefun(f[1,x][[1]], f[2,x][[1]])(p[i])
    dens
  }
- # , envir = g.env
- )
-
- return(g)
-
-  # g <- function(p,X) f[[X+1]](p)
-  # return(g)
 }
