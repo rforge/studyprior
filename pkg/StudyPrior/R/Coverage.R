@@ -8,9 +8,9 @@
 #' @export
 #'
 #' @examples
-calc.coverage <- function(prior, level, n.control, smooth, posterior, ...){
+calc.coverage <- function(prior, level, n.control, smooth, posterior=NULL, ...){
 
-  CI.mat <- calc.cis(prior, level, n.control)
+  CI.mat <- calc.cis(prior, level, n.control, posterior)
 
   plot.coverage(confidence.intervals = CI.mat,
                 smooth=smooth,
@@ -19,9 +19,9 @@ calc.coverage <- function(prior, level, n.control, smooth, posterior, ...){
 }
 
 
-calc.cis <- function(prior, level, n.control){
+calc.cis <- function(prior, level, n.control, posterior){
 
-  if(missing(posterior)){
+  if(is.null(posterior)){
     CIs <-  sapply(0:n.control, function(Xs){
       if(inherits(prior,"function")){
         post <- function(p,k=1) prior(p, X=Xs)*dbinom(x=Xs, size=n.control, prob=p)/k
@@ -47,16 +47,16 @@ calc.cis <- function(prior, level, n.control){
 
     })
     as.matrix(t(CIs))
-  }  else if(!missing(posterior)){
+  }  else if(!is.null(posterior)){
     CIs <- sapply(posterior, function(post){
 
       lowerp <- function(P) adaptIntegrate(post, lowerLimit = 0, upperLimit = P)$integral
       upperp <- function(P) adaptIntegrate(post, lowerLimit = P, upperLimit = 1)$integral
 
       c(
-        optimise(function(P) (lowerp(P)-(1-level)/2)^2, interval=c(0,1))$minimum,
-        optimise(function(P) (upperp(P)-(1-level)/2)^2, interval=c(0,1))$minimum
-        )
+        uniroot(function(P) (lowerp(P)-(1-level)/2), interval=c(0,1))$root,
+        uniroot(function(P) (upperp(P)-(1-level)/2), interval=c(0,1))$root
+      )
     })
     as.matrix(t(CIs))
   }
