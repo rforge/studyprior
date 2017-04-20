@@ -1,8 +1,13 @@
-
+I <- commandArgs(trailingOnly = TRUE)
 library(foreach)
 library(StudyPrior)
 inla.setOption(num.threads=2)
-recalc <- 1:1000
+
+
+
+lapply(split(1:1000, as.factor(rep(1:20, each=50)))[I],
+       function(recalc){
+
 
 mclapply(mc.cores=20, recalc, function(i){
   # lapply( recalc, function(i){
@@ -12,17 +17,19 @@ mclapply(mc.cores=20, recalc, function(i){
   set.seed(300*i)
   N <- 5
   n <- rep(50,N)
-  z <- 0.65
+  z <- rnorm(N, 0.65, 0.1)
+
   x <- mapply(rbinom, size=n, n=1, prob=z)
   x/n
-  Xs <- rbinom(1,100,0.6)
+
   Ns <- 200
   cat(i,".\n")
   F.MFP <- binom.prior("MAP.FB", x = x, n=n)
   cat(i,"..\n")
-  F.MEP <- binom.prior("MAP.EB", x = x, n=n, X=0:Ns, N=Ns, mc.cores=1, verbose=FALSE)
-  cat(i,"...\n")
-  F.PFP <- binom.prior("PP.FB", x = x, n=n, samples=5000, length=512, mc.cores=1, verbose=FALSE)
+  # F.MEP <- binom.prior("MAP.EB", x = x, n=n, X=0:Ns, N=Ns, mc.cores=1, verbose=FALSE)
+  # cat(i,"...\n")
+  # F.PFP <- binom.prior("PP.FB", x = x, n=n, samples=5000, length=512, mc.cores=1, verbose=FALSE)
+  F.PFP <- binom.prior("PP.Cor", x = x, n=n, d.prior.cor=0, samples=5000, length=512)
   ## With feedback
   cat(i,"....\n")
   F.PEP <- binom.prior("PP.EB", x = x, n=n, X=0:Ns, N=Ns, verbose=FALSE, mc.cores=1)
@@ -35,8 +42,8 @@ mclapply(mc.cores=20, recalc, function(i){
   cat(i,"........\n")
   F.SGL <- binom.prior("PP.EB", x = sum(x), n=sum(n), X=0:Ns, N=Ns, verbose=FALSE, mc.cores=1)
   cat(i,".........\n")
-  save(F.MFP, F.MEP,F.PFP,F.PEP,F.FX0, F.COR, F.PSP, F.SGL, n,x,
-       file=paste0("Fix-5/models_f_",i,".rda"))
+  save(F.MFP, F.PFP,F.PEP,F.FX0, F.COR, F.PSP, F.SGL, n,x,
+       file=paste0("Rand-5/models_f_",i,".rda"))
 }
 )
 
@@ -83,26 +90,39 @@ Calc.posterior.all <- function(prior, N, mc.cores){
 
 ####################################################
 CORES <- 20
-recalc <- 1:1000
+# recalc <- 783:1000
 
 for(i in recalc){
   print(i)
   try({
-    load(file=paste0("Fix-5/models_f_",i,".rda"))
+    load(file=paste0("Rand-5/models_f_",i,".rda"))
 
     Ns <- 200
 
     posteriors <-
     lapply(list(
       F.MFP, F.PFP,F.PEP,F.FX0, F.COR, F.PSP, F.SGL),
-      Calc.posterior.all, N=Ns, mc.cores=CORES
+      Calc.posterior.all, N=Ns, mc.cores=CORES/2
     )
 
-    posteriors2 <-
-      lapply(list(
-        F.MFP),
-        Calc.posterior.all, N=Ns, mc.cores=CORES
-      )
+    myess <-  function(pr){
+
+      if(exists('ds', environment(pr))){
+
+        Ds <- unlist(lapply(environment(pr)$ds, function(l) {
+          if(length(l)==1) rep(l,5)
+          else l
+          }))
+
+        # browser()
+        outer(seq(0,1,len=100), 0:200, function(X,Y) dbinom(Y,size=Ns, prob=X)) %*%
+       ( matrix(Ds, nrow = 201, byrow=TRUE) %*% rep(50,5))
+      } else NA
+    }
+
+    ess <- lapply(list(F.MFP, F.PFP,F.PEP,F.FX0, F.COR, F.PSP, F.SGL),
+                  myess
+                 )
 
     mse <- lapply(posteriors,
       function(pr) calc.MSE.mean(posterior=pr, prob.range=c(0,1), length = 100, mc.cores=CORES, n.binom=Ns))
@@ -145,7 +165,9 @@ for(i in recalc){
 
     n.fix <- n
     x.fix <- x
-    save(n.fix, x.fix,  bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("Fix-5/study_fix_",i,".rda"))
+    save(n.fix, x.fix,  bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("Rand-5/study_rand_",i,".rda"))
 
   })
 }
+
+})
