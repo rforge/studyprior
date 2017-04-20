@@ -43,10 +43,12 @@ binom.MAP.FB <- function(x, n, tau.prior, verbose=FALSE){
 #
 # f <- eval(parse(text=fun.string))
 
+X <- result$marginals.fitted.values[[n.hist+1]][,1]
+Y <- result$marginals.fitted.values[[n.hist+1]][,2]
 
-
- f <-  splinefun(result$marginals.fitted.values[[n.hist+1]][,1],
-                 result$marginals.fitted.values[[n.hist+1]][,2])
+ f <-  splinefun(c(0,min(X)/3, 2*min(X)/3, X, .3+.7*max(X),0.7+0.3*max(X),1),
+                 c(0,0,0,Y,0,0,0),
+                 method = "monoH")
 
   rm(dat, formula, n, n.hist, prior, result, tau.prior, verbose, x)
 

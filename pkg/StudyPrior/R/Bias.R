@@ -1,4 +1,4 @@
-
+#TODO ADD SUPPORT FOR MODE TO PRIOR ONLY CALCULATIONS
 
 #' Calculate bias
 #'
@@ -6,12 +6,16 @@
 #' @param prob.range
 #' @param length
 #' @param n.binom
+#' @param posterior a posterior function
+#' @param mc.cores number of cores
+#' @param type Either "mean" or "mode" of the posterior to use as the estimate
 #'
 #' @return
 #' @export
 #'
 #' @examples
-calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterior, mc.cores=1){
+calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterior, mc.cores=1, type="mean"){
+
 
   P <- seq(prob.range[1],prob.range[2],len=length)
   if(missing(posterior)){
@@ -41,7 +45,8 @@ calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterio
     Bias.for.x <- parallel::mclapply(posterior, function(post){
       print("Biasing!")
       print(post)
-      Ep <-  adaptIntegrate(function(p) post(p)*p, 0,1, maxEval=1e4)$integral
+      if( type == "mean") Ep <-  adaptIntegrate(function(p) post(p)*p, 0,1, maxEval=1e4)$integral
+      else if(type == "mode") Ep <-  optimize(function(p) post(p), c(0,1), maximum = TRUE)$maximum
 
       return(sapply(P, function(true.p){ Ep - true.p})
       )

@@ -38,6 +38,7 @@ binom.PP.EB.Sep <- function(x, n, X, N, verbose=FALSE){
 
       return(g)
 })
+  ds <- lapply(dists, function(D) get(x="d", pos=environment(D)))
   f <- function(p,X) do.call(dists[[X+1]], list(p=p))
   return(f)
 }

@@ -12,5 +12,6 @@
 #' @examples
 #'
 binom.PP.FIX <- function(x, n, d,  p.prior.a=1, p.prior.b=1, verbose){
+  ds <- d
     function(p,...) dbeta(p,p.prior.a + sum(x*d), p.prior.b + sum(d*(n-x)))
 }
