@@ -152,7 +152,9 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
   degree <- (1:max.degree)[id]
 
 if(robust){
-  fl <- create.fun.list(type, pars=c(opt$par[-(1:degree)],1,1), weights=c(opt$par[1:degree],0.0001))
+  fl <- create.fun.list(type, pars=c(opt$par[-(1:degree)],1,1),
+                        weights=c(opt$par[1:degree]/sum(c(opt$par[1:degree]))*(1-robust),
+                                  robust))
 } else fl <- create.fun.list(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
 
   if(do.plot) plot.fun.list(x, fl, stack=TRUE, lines.only=TRUE)
