@@ -30,10 +30,10 @@ calc.MSE.mean <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.c
 
     } else if(inherits(prior, "mixture.list")){
       post.list <- posterior.fun.list(Xs, n.binom, prior)
-      return((mean.fun.list(post.list)-P)^2 + var.fun.list(post.list))
+      return((mean.fun.list(post.list)-P)^2 )
     } else if(inherits(prior, "list")){
       post.list <- posterior.fun.list(Xs, n.binom, prior[[Xs+1]])
-      return((mean.fun.list(post.list)-P)^2 + var.fun.list(post.list))
+      return((mean.fun.list(post.list)-P)^2 )
     }
   }, mc.cores = mc.cores)
   } else if(!missing(posterior)){
