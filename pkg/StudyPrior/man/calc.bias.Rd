@@ -5,10 +5,14 @@
 \title{Calculate bias}
 \usage{
 calc.bias(prior, prob.range = c(0.5, 1), length = 20, n.binom = 30,
-  posterior, mc.cores = 1)
+  posterior, mc.cores = 1, type = "mean")
 }
 \arguments{
-\item{n.binom}{}
+\item{posterior}{a posterior function}
+
+\item{mc.cores}{number of cores}
+
+\item{type}{Either "mean" or "mode" of the posterior to use as the estimate}
 }
 \description{
 Calculate bias

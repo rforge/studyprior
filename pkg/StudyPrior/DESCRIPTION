@@ -20,4 +20,6 @@ Depends:
     INLA,
     parallel,
     cubature
+Additional_repositories:
+    https://inla.r-inla-download.org/R/stable
 RoxygenNote: 5.0.1

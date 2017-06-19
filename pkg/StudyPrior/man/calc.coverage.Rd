@@ -4,7 +4,7 @@
 \alias{calc.coverage}
 \title{Coverage using prior using the Bayarri thing}
 \usage{
-calc.coverage(prior, level, n.control, smooth, posterior, ...)
+calc.coverage(prior, level, n.control, smooth, posterior = NULL, ...)
 }
 \arguments{
 \item{length}{}

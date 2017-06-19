@@ -4,7 +4,7 @@
 \alias{binom.PP.FB.MC.COR}
 \title{Title}
 \usage{
-binom.PP.FB.MC.COR(x, n, verbose = FALSE, length = 30, d.prior.cor = 0,
+binom.PP.FB.MC.COR(x, n, verbose = FALSE, length = 200, d.prior.cor = 0,
   p.prior.a = 1, p.prior.b = 1, mc.cores = 1, samples = 10000, focus)
 }
 \arguments{
