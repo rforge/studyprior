@@ -8,7 +8,20 @@ calc.MSE(prior, prob.range = c(0.5, 1), length = 20, n.binom = 30,
   mc.cores = 1, posterior)
 }
 \arguments{
-\item{n.binom}{}
+\item{prior}{Prior to calculate posterior. Specify posterior instead if available.}
+
+\item{prob.range}{Range of values to calculate MSE over}
+
+\item{length}{Number of values to calculate MSE for}
+
+\item{n.binom}{Number of patients in new trial}
+
+\item{mc.cores}{Number of cores for parallel}
+
+\item{posterior}{Posterior density}
+}
+\value{
+A vector of error values
 }
 \description{
 Calculate mean squared error

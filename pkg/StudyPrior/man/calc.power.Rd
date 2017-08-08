@@ -9,7 +9,26 @@ calc.power(prior, prob.range = c(0.5, 0.9), length = 20,
   treatment.difference = 0.1, level = 0.95, sig.mat, mc.cores = 1)
 }
 \arguments{
-\item{n.binom}{}
+\item{prior}{Prior to calculate posterior}
+
+\item{prob.range}{Range of values to calculate over}
+
+\item{length}{Number of values to calculate for}
+
+\item{n.binom.control}{Number of patients in new trial's contral arm}
+
+\item{n.binom.treatment}{Number of patients in new trial's treatment arm}
+
+\item{treatment.difference}{Predefined treatment difference}
+
+\item{level}{Significance level for calculation of sig.mat}
+
+\item{sig.mat}{Precalculated significance matrix (See sig.matrix)}
+
+\item{mc.cores}{Number of cores for parallel}
+}
+\value{
+Vector or power values
 }
 \description{
 Calculate power

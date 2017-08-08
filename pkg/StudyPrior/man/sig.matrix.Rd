@@ -5,19 +5,26 @@
 \title{Calculate a matrix of significance test results for all possible values}
 \usage{
 sig.matrix(n.control, n.treatment, level = 0.975, prior, posterior,
-  treat.beta.prior.par = c(1, 1), mc.cores = 1, check.xt, check.xs,
-  debug = FALSE)
+  treat.beta.prior.par = c(1, 1), mc.cores = 1, check.xt, check.xs)
 }
 \arguments{
-\item{n.control}{Number of subjects in the control group}
+\item{n.control}{Number of patients in the control group}
+
+\item{n.treatment}{Number of patients in the treatment group}
 
 \item{level}{Significance level to test (default 0.975)}
 
 \item{prior}{Prior on binomial probability parameter of the control group}
 
+\item{posterior}{List of posterior functions, one for each outcome in the control arm. (Default length=\code{n.control+1})}
+
 \item{treat.beta.prior.par}{Paramters for beta prior on treatment group probability parameter}
 
 \item{mc.cores}{Number of cores to use for mclapply}
+
+\item{check.xt}{Optional argument to specify which outcomes in the treament arm should be considered. Otherwise \code{0:n.treatment}}
+
+\item{check.xs}{Optional argument to specify which outcomes in the control arm should be considered. Otherwise \code{0:n.control}}
 }
 \value{
 A matrix of TRUE/FALSE values of size n.control+1 x n.treatment+1

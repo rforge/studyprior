@@ -1,16 +1,15 @@
-
-
 #' Calculate mean squared error based on the mode of the posterior
 #'
-#' @param prior
-#' @param prob.range
-#' @param length
-#' @param n.binom
+#' @param prior Prior to calculate posterior. Specify posterior instead if available.
+#' @param prob.range Range of values to calculate MSE over
+#' @param length Number of values to calculate MSE for
+#' @param n.binom Number of patients in new trial
+#' @param mc.cores Number of cores for parallel
+#' @param posterior Posterior density 
 #'
-#' @return
+#' @return A vector of error values
 #' @export
 #'
-#' @examples
 calc.MSE.mode <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.cores=1, posterior){
 
   P <- seq(prob.range[1],prob.range[2],len=length)
@@ -29,11 +28,11 @@ calc.MSE.mode <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.c
         sq.err <- (p$maximum-P)^2
         return(sq.err)
       } else if(inherits(prior, "mixture.list")){
-        post.list <- posterior.fun.list(Xs, n.binom, prior)
-        return((mean.fun.list(post.list)-P)^2 + var.fun.list(post.list))
+        post.list <- posterior.mixture.prior(Xs, n.binom, prior)
+        return((mean.mixture.prior(post.list)-P)^2 + var.mixture.prior(post.list))
       } else if(inherits(prior, "list")){
-        post.list <- posterior.fun.list(Xs, n.binom, prior[[Xs+1]])
-        return((mean.fun.list(post.list)-P)^2 + var.fun.list(post.list))
+        post.list <- posterior.mixture.prior(Xs, n.binom, prior[[Xs+1]])
+        return((mean.mixture.prior(post.list)-P)^2 + var.mixture.prior(post.list))
       }
     }, mc.cores = mc.cores)
   } else if(!missing(posterior)){

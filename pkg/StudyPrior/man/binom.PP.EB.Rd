@@ -8,19 +8,26 @@ binom.PP.EB(x, n, X, N, verbose = FALSE, mc.cores = 1, p.prior.a = 1,
   p.prior.b = 1)
 }
 \arguments{
-\item{x}{historical events}
+\item{x}{number of historical successes}
 
-\item{n}{historical trials}
+\item{n}{number historical patients}
 
-\item{p.prior.b}{}
+\item{X}{vector of new successes to computer prior for}
+
+\item{N}{number of new patients}
+
+\item{verbose}{TRUE}
+
+\item{mc.cores}{number of cores for parallel}
+
+\item{p.prior.a}{shape1 parameter of initial beta prior for successes}
+
+\item{p.prior.b}{shape2 parameter of initial beta prior for successes}
 }
 \value{
 A function of the probability parmater p
 }
 \description{
 Empirical Bayes Power Prior for Binomial Data
-}
-\examples{
-
 }
 

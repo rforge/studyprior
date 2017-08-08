@@ -7,13 +7,13 @@
 binom.MAP.FB(x, n, tau.prior, verbose = FALSE)
 }
 \arguments{
-\item{x}{historical events}
+\item{x}{number of historical successes}
 
-\item{n}{historical trials}
+\item{n}{number historical patients}
 
 \item{tau.prior}{optional prior on heterogeneity parameter}
 
-\item{verbose}{}
+\item{verbose}{Print messages}
 }
 \value{
 A function of the probability parmater p

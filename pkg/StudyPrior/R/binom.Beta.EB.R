@@ -2,11 +2,11 @@
 #'
 #' @param x historical events
 #' @param n historical trials
+#' @param verbose Print messages
 #'
 #' @return A function of the probability parmater p
 #' @export
 #'
-#' @examples
 #'
 binom.Beta.EB <- function(x, n, verbose=FALSE){
   n.hist <- length(x)

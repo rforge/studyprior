@@ -6,11 +6,12 @@
 #' @param n Vector of historical sample sizes
 #' @param type Which prior to provide
 #' @param ... Parameters to provide to prior
+#' @param verbose Print messages
 #'
-#' @return A function
+#' @return A density function
 #' @export
 #'
-#' @examples
+
 binom.prior <- function(type = c("MAP.FB", "MAP.EB","PP.FB","PP.EB","PP.EB.Beta","Beta.EB","PP.EB.Sep", "PP.Fix","PP.Cor"),
                         x, n,
                         verbose=FALSE,

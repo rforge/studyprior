@@ -4,15 +4,17 @@
 \alias{normal.PP.FB.INLA}
 \title{Normal power prior with full Bayes by INLA}
 \usage{
-normal.PP.FB.INLA(x, sd, verbose = FALSE, length = 30, d.prior.a = 1,
-  d.prior.b = 1, mc.cores = 1, samples = 10000, focus)
+normal.PP.FB.INLA(x, sd, verbose = FALSE)
 }
 \arguments{
 \item{x}{numeric vector of results}
 
 \item{sd}{standard deviations}
 
-\item{focus}{list(from, to, length) to evaluate the marginal density when fitting the curve}
+\item{verbose}{Print messages}
+}
+\value{
+A density function
 }
 \description{
 Normal power prior with full Bayes by INLA

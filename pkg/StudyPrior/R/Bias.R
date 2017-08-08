@@ -2,18 +2,17 @@
 
 #' Calculate bias
 #'
-#' @param prior
-#' @param prob.range
-#' @param length
-#' @param n.binom
-#' @param posterior a posterior function
-#' @param mc.cores number of cores
+#' @param prior Prior to calculate posterior. Specify posterior instead if available.
+#' @param prob.range Range of values to calculate MSE over
+#' @param length Number of values to calculate MSE for
+#' @param n.binom Number of patients in new trial
+#' @param mc.cores Number of cores for parallel
+#' @param posterior Posterior density 
 #' @param type Either "mean" or "mode" of the posterior to use as the estimate
 #'
-#' @return
+#' @return A vector of bias values
 #' @export
 #'
-#' @examples
 calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterior, mc.cores=1, type="mean"){
 
 
@@ -25,7 +24,7 @@ calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterio
         post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.binom, prob=p)/g
         f <- splinefun(smooth.spline(seq(0.001,.999,len=1000), pmax(0,post(seq(0.001,.999,len=1000)))))
         # print(Xs)
-        K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
+        K <- adaptIntegrate(f, lowerLimit = 0, upperLimit = 1, maxEval = 2e5)$integral
 
         # probability * square error
         Ep <- function(p, true.p) f(p)/K *p
@@ -35,10 +34,10 @@ calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterio
         )
 
       } else if(inherits(prior, "mixture.list")){
-        return(mean.fun.list(fun.list=posterior.fun.list(Xs, n.binom, prior))-P)
+        return(mean.mixture.prior(x=posterior.mixture.prior(Xs, n.binom, prior))-P)
 
       } else if(inherits(prior, "list")){
-        return(mean.fun.list(fun.list=posterior.fun.list(Xs, n.binom, prior[[Xs+1]]))-P)
+        return(mean.mixture.prior(x=posterior.mixture.prior(Xs, n.binom, prior[[Xs+1]]))-P)
       }
     })
   } else if(!missing(posterior)){

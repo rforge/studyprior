@@ -1,13 +1,17 @@
 #' Full Bayes Power Prior for Binomial Data
 #'
-#' @param x historical events
-#' @param n historical trials
-#' @param tau.prior optional prior on heterogeneity parameter
+#' @param x number of historical successes
+#' @param n number historical patients
+#' @param length  Number of points to evaluate density at
+#' @param mc.cores Number of cores for parallel
+#' @param verbose Print messages
+#' @param p.prior.a shape1 parameter for beta prior on probability
+#' @param p.prior.b shape2 parameter for beta prior on probability
+#' @param dprior Density function for prior on weights
 #'
 #' @return A function of the probability parmater p
 #' @export
 #'
-#' @examples
 #'
 binom.PP.FB <- function(x, n, verbose=FALSE, length=30, dprior, mc.cores=1,  p.prior.a=1, p.prior.b=1){
   n.hist <- length(x)
@@ -22,13 +26,13 @@ binom.PP.FB <- function(x, n, verbose=FALSE, length=30, dprior, mc.cores=1,  p.p
 
   if(missing(dprior)) dprior <- function(d) (d>=0 & d<=1)*1
 
-  dens <-parallel::mclapply(p, function(PROB, verbose){
+  dens <-mclapply(p, function(PROB, verbose){
     VP(PROB)
-    cubature::adaptIntegrate(function(d) prod(dprior(d))*
+    adaptIntegrate(function(d) prod(dprior(d))*
                      prod(mapply(ddbinom, x=x, size=n, delta=d, prob=PROB))*dbeta(PROB, p.prior.a,p.prior.b)/
                      cex(d,x,n)$value,
-                   lower=rep(0, n.hist),
-                   upper=rep(1, n.hist),
+                   lowerLimit = rep(0, n.hist),
+                   upperLimit = rep(1, n.hist),
                    maxEval = 5000)$integral
     },
     verbose=verbose,

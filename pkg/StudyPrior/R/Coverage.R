@@ -1,13 +1,17 @@
 
-#' Coverage using prior using the Bayarri thing
+#' Coverage of Posterior using local smoothing with beta kernels
 #'
-#' @param prior
-#' @param length
-#'
-#' @return
+#' @param level Significance level
+#' @param n.control Number of patients in new trial
+#' @param smooth Local smoothing parameter for beta kernels
+#' @param posterior Posterior density
+#' @param ... Additional arguments for plot
+#' @param prior Prior to calculate posterior. Specify posterior instead if available.
+#' 
+#' 
+#' @return A vector of coverage values
 #' @export
 #'
-#' @examples
 calc.coverage <- function(prior, level, n.control, smooth, posterior=NULL, ...){
 
   CI.mat <- calc.cis(prior, level, n.control, posterior)
@@ -27,7 +31,7 @@ calc.cis <- function(prior, level, n.control, posterior){
         post <- function(p,k=1) prior(p, X=Xs)*dbinom(x=Xs, size=n.control, prob=p)/k
         f <- splinefun(smooth.spline(seq(0.0001,0.9999,len=1000), pmax(0,post(seq(.001,.999,len=1000)))))
         # print(Xs)
-        K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
+        K <- adaptIntegrate(f, lowerLimit = 0, upperLimit = 1, maxEval = 2e5)$integral
 
         # get the confidence intervals
         P <- seq(0.00001,.99999,length.out = 1024)
@@ -37,11 +41,11 @@ calc.cis <- function(prior, level, n.control, posterior){
         # apply the smoothing
         return(CI)
       } else if (inherits(prior,"mixture.list")){
-        q.fun.list(c((1-level)/2,1-(1-level)/2), posterior.fun.list(Xs, n.control, prior))
+        q.mixture.prior(c((1-level)/2,1-(1-level)/2), posterior.mixture.prior(Xs, n.control, prior))
 
       } else if (inherits(prior,"list")){
-        # post <-function(p) eval.fun.list(p, posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
-        q.fun.list(c((1-level)/2,1-(1-level)/2),posterior.fun.list(Xs, n.control, prior[[Xs+1]]))
+        # post <-function(p) eval.mixture.prior(p, posterior.mixture.prior(Xs, n.control, prior[[Xs+1]]))
+        q.mixture.prior(c((1-level)/2,1-(1-level)/2),posterior.mixture.prior(Xs, n.control, prior[[Xs+1]]))
       }
 
 

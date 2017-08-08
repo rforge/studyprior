@@ -1,18 +1,32 @@
 
 #' Approximate distribution with mixture model
 #'
-#' @param distr
-#' @param type
-#' @param degree
-#' @param range
-#' @param starts
-#' @param length.fit
+#' @param distr The density function of the function to be approximated
+#' @param type Use beta or normal densities in the mixture
+#' @param range The range of the density function to approximate
+#' @param starts Initial parameters for the search
+#' @param length.fit Number of points to fit to
+#' @param min.degree Minimum size of mixture
+#' @param max.degree Maximum size of mixture
+#' @param robust Include a robust component? (FALSE or final weight between 0 and 1)
+#' @param do.plot Show the components of the mixture in a plot
+#' @param return.value Convergence threshold
 #'
-#' @return
+#' @return Returns a mixture.prior object
 #' @export
 #'
-#' @examples
-conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, max.degree = 3, return.value=0.2, range=c(0,1), starts, length.fit=100, do.plot=FALSE, robust=FALSE){
+
+conj.approx <- function(distr,
+                        type=c("beta","normal"),
+                        max.degree = 3,
+                        min.degree=max.degree,
+                        robust=FALSE,
+                        range=c(0,1),
+                        do.plot=FALSE,
+                        return.value=0.2,
+                        starts,
+                        length.fit=100
+                        ){
 
   x <- rep(seq(range[1],range[2], length.out = length.fit), each=1)
   y <- distr(x) #+ rnorm(length(x), 0, 0.05)
@@ -68,7 +82,7 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
                           "normal" =c(1/1:degree,rep(c(1,5),degree)))
 
     #############################################################################
-    fl <- create.fun.list(type,
+    fl <- create.mixture.prior(type,
                           unlist(start.list)[-c(1:degree)],
                           unlist(start.list)[1:degree])
 
@@ -76,14 +90,14 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
     opt.env <- new.env()
     assign("x", x, envir=opt.env)
     assign("y", y, envir=opt.env)
-    assign("fun.list", fl, envir=opt.env)
+    assign("mixture.prior", fl, envir=opt.env)
 
     if(missing(starts)) starts <- start.list
 
     opt <-
       optimr::optimr(unlist(starts),
                      function(PAR){
-                       sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
+                       sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(mixture.prior = fl,
                                                                                    pars=PAR[-(1:degree)],
                                                                                    weights=PAR[1:degree])))^2)
                      },
@@ -100,7 +114,7 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
       opt <-
         optimr::optimr(unlist(start.list),
                        function(PAR){
-                         sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
+                         sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(mixture.prior = fl,
                                                                          pars=PAR[-(1:degree)],
                                                                          weights=PAR[1:degree])))^2)
                        },
@@ -118,7 +132,7 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
       opt <-
         optimr::optimr(start.rand,
                        function(PAR){
-                         sum((dat$y-eval.fun.list(dat$x, update.fun.list(fun.list = fl,
+                         sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(mixture.prior = fl,
                                                                          pars=PAR[-(1:degree)],
                                                                          weights=PAR[1:degree])))^2)
                        },
@@ -152,12 +166,14 @@ conj.approx2 <- function(distr, type=c("beta","normal"), min.degree=max.degree, 
   degree <- (1:max.degree)[id]
 
 if(robust){
-  fl <- create.fun.list(type, pars=c(opt$par[-(1:degree)],1,1),
+  fl <- create.mixture.prior(type, pars=c(opt$par[-(1:degree)],1,1),
                         weights=c(opt$par[1:degree]/sum(c(opt$par[1:degree]))*(1-robust),
                                   robust))
-} else fl <- create.fun.list(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
+} else fl <- create.mixture.prior(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
 
-  if(do.plot) plot.fun.list(x, fl, stack=TRUE, lines.only=TRUE)
+  if(do.plot) plot.mixture.prior(x, fl, stack=TRUE, lines.only=TRUE)
 
   return(fl)
 }
+
+conj.approx2 <- conj.approx

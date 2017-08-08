@@ -1,22 +1,22 @@
-#' Title
+#' Full Bayes Power Prior with Beta Prior on Weights
 #'
-#' @param x
-#' @param n
-#' @param verbose
-#' @param length
-#' @param d.prior.a shape1 parameter for beta prior on weight
-#' @param d.prior.b shape2 parameter for beta prior on weight
-#' @param mc.cores
-#' @param samples
+#' @param x number of historical successes
+#' @param n number historical patients
+#' @param length  Number of points to evaluate density at
+#' @param mc.cores Number of cores for parallel
+#' @param samples Number of Monte Carlo samples
+#' @param focus List of triples specifying regions to focus on, eg peaks. Specified as list(c(lower, upper, length))
+#' @param verbose Print messages
+#' @param d.prior.a shape1 parameter for beta prior on weights
+#' @param d.prior.b shape2 parameter for beta prior on weights
 #' @param p.prior.a shape1 parameter for beta prior on probability
 #' @param p.prior.b shape2 parameter for beta prior on probability
-#' @param focus
 #'
-#' @return
+#' @return A density function
 #' @export
-#'
-#' @examples
-binom.PP.FB.MC.BE <- function(x, n, verbose=FALSE, length=30, d.prior.a=1, d.prior.b=1, p.prior.a=1, p.prior.b=1, mc.cores=1, samples=10000, focus ){
+binom.PP.FB.MC.BE <- function(x, n, verbose=FALSE, length=30,
+                              d.prior.a=1, d.prior.b=1, p.prior.a=1, p.prior.b=1,
+                              mc.cores=1, samples=10000, focus ){
   n.hist <- length(x)
 
   #Where to calculate density at

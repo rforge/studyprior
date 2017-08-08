@@ -1,11 +1,14 @@
-#' Empirical Bayes Power Prior for Binomial Data
+#' Power Prior for Binomial Data Using Empirical Bayes on Beta Prior on Weights
 #'
-#' @param x historical events
-#' @param n historical trials
+#' @param x number of historical successes
+#' @param n number historical patients
+#' @param X number of new successes
+#' @param N number of new patients
+#' @param verbose Print messages
+#'
 #' @return A function of the probability parmater p
 #' @export
 #'
-#' @examples
 #'
 binom.PP.EB.Beta <- function(x, n, X, N, verbose=FALSE){
 

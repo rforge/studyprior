@@ -1,16 +1,22 @@
 
 #' Calculate power
 #'
-#' @param prior
-#' @param prob.range
-#' @param length
-#' @param n.binom
+#' @param prior Prior to calculate posterior
+#' @param prob.range Range of values to calculate over
+#' @param length Number of values to calculate for
+#' @param n.binom.control Number of patients in new trial's contral arm
+#' @param n.binom.treatment Number of patients in new trial's treatment arm
+#' @param treatment.difference Predefined treatment difference
+#' @param level Significance level for calculation of sig.mat
+#' @param sig.mat Precalculated significance matrix (See sig.matrix)
+#' @param mc.cores Number of cores for parallel
 #'
-#' @return
+#' @return Vector or power values
 #' @export
 #'
-#' @examples
-calc.power <- function(prior, prob.range=c(.5,.9), length=20, n.binom.control=30, n.binom.treatment=n.binom.control, treatment.difference=0.1, level=0.95, sig.mat, mc.cores=1){
+
+calc.power <- function(prior, prob.range=c(.5,.9), length=20, n.binom.control=30,
+                       n.binom.treatment=n.binom.control, treatment.difference=0.1, level=0.95, sig.mat, mc.cores=1){
 # the probability to detect a given true difference
 # detection by
   if(treatment.difference+prob.range[2] > 1) stop("Unable to calculate power for difference at upper end of probability range (prob.range+treatment.difference > 1).")

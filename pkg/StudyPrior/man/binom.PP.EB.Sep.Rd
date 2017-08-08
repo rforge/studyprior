@@ -7,23 +7,20 @@
 binom.PP.EB.Sep(x, n, X, N, verbose = FALSE)
 }
 \arguments{
-\item{x}{historical events}
+\item{x}{number of historical successes}
 
-\item{n}{historical trials}
+\item{n}{number historical patients}
 
-\item{X}{current events}
+\item{X}{number of new successes}
 
-\item{N}{current number of trials}
+\item{N}{number of new patients}
 
-\item{tau.prior}{optional prior on heterogeneity parameter}
+\item{verbose}{Print messages}
 }
 \value{
 A function of the probability parmater p
 }
 \description{
 Empirical Bayes Power Prior for Binomial Data Esimated Separately
-}
-\examples{
-
 }
 

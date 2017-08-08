@@ -2,23 +2,36 @@
 % Please edit documentation in R/binom.PP.FB.MC.COR.R
 \name{binom.PP.FB.MC.COR}
 \alias{binom.PP.FB.MC.COR}
-\title{Title}
+\title{Full Bayes Power Prior with Correlated Weight Parameters}
 \usage{
 binom.PP.FB.MC.COR(x, n, verbose = FALSE, length = 200, d.prior.cor = 0,
   p.prior.a = 1, p.prior.b = 1, mc.cores = 1, samples = 10000, focus)
 }
 \arguments{
-\item{p.prior.a}{shape1 parameter for beta prior on probability}
+\item{x}{number of historical successes}
 
-\item{p.prior.b}{shape2 parameter for beta prior on probability}
+\item{n}{number historical patients}
 
-\item{focus}{}
+\item{verbose}{Print messages}
 
-\item{d.prior.a}{shape1 parameter for beta prior on weight}
+\item{length}{Number of points to evaluate density at}
 
-\item{d.prior.b}{shape2 parameter for beta prior on weight}
+\item{d.prior.cor}{Correlation parameter for transformed multivariate normal prior on weights}
+
+\item{p.prior.a}{shape1 parameter for initial beta prior on probability}
+
+\item{p.prior.b}{shape2 parameter for initial beta prior on probability}
+
+\item{mc.cores}{Number of cores for parallel}
+
+\item{samples}{Number of Monte Carlo samples}
+
+\item{focus}{List of triples specifying regions to focus on, eg peaks. Specified as list(c(lower, upper, length))}
+}
+\value{
+A density function
 }
 \description{
-Title
+Full Bayes Power Prior with Correlated Weight Parameters
 }
 

@@ -1,15 +1,14 @@
 #' Empirical Bayes Power Prior for Binomial Data Esimated Separately
 #'
-#' @param x historical events
-#' @param n historical trials
-#' @param X current events
-#' @param N current number of trials
-#' @param tau.prior optional prior on heterogeneity parameter
+#' @param x number of historical successes
+#' @param n number historical patients
+#' @param X number of new successes
+#' @param N number of new patients
+#' @param verbose Print messages
 #'
 #' @return A function of the probability parmater p
 #' @export
 #'
-#' @examples
 #'
 binom.PP.EB.Sep <- function(x, n, X, N, verbose=FALSE){
 

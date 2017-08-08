@@ -1,7 +1,7 @@
 Package: StudyPrior
 Type: Package
 Title: Distributions for Historical Information
-Version: 0.0.5
+Version: 0.0.6
 Author: Isaac Gravestock
 Maintainer: Isaac Gravestock <isaac.gravestock@uzh.ch>
 Description: Implements useful prior distributions for incorporating data from
@@ -18,7 +18,6 @@ Imports:
     mvtnorm
 Depends:
     INLA,
-    parallel,
     cubature
 Additional_repositories:
     https://inla.r-inla-download.org/R/stable

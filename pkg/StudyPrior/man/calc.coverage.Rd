@@ -2,14 +2,27 @@
 % Please edit documentation in R/Coverage.R
 \name{calc.coverage}
 \alias{calc.coverage}
-\title{Coverage using prior using the Bayarri thing}
+\title{Coverage of Posterior using local smoothing with beta kernels}
 \usage{
 calc.coverage(prior, level, n.control, smooth, posterior = NULL, ...)
 }
 \arguments{
-\item{length}{}
+\item{prior}{Prior to calculate posterior. Specify posterior instead if available.}
+
+\item{level}{Significance level}
+
+\item{n.control}{Number of patients in new trial}
+
+\item{smooth}{Local smoothing parameter for beta kernels}
+
+\item{posterior}{Posterior density}
+
+\item{...}{Additional arguments for plot}
+}
+\value{
+A vector of coverage values
 }
 \description{
-Coverage using prior using the Bayarri thing
+Coverage of Posterior using local smoothing with beta kernels
 }
 

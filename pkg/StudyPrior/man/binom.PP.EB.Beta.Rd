@@ -2,22 +2,25 @@
 % Please edit documentation in R/binom.PP.EB.Beta.R
 \name{binom.PP.EB.Beta}
 \alias{binom.PP.EB.Beta}
-\title{Empirical Bayes Power Prior for Binomial Data}
+\title{Power Prior for Binomial Data Using Empirical Bayes on Beta Prior on Weights}
 \usage{
 binom.PP.EB.Beta(x, n, X, N, verbose = FALSE)
 }
 \arguments{
-\item{x}{historical events}
+\item{x}{number of historical successes}
 
-\item{n}{historical trials}
+\item{n}{number historical patients}
+
+\item{X}{number of new successes}
+
+\item{N}{number of new patients}
+
+\item{verbose}{Print messages}
 }
 \value{
 A function of the probability parmater p
 }
 \description{
-Empirical Bayes Power Prior for Binomial Data
-}
-\examples{
-
+Power Prior for Binomial Data Using Empirical Bayes on Beta Prior on Weights
 }
 

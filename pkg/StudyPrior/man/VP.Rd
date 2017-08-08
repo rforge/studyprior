@@ -7,7 +7,7 @@
 VP(message)
 }
 \arguments{
-\item{message}{}
+\item{message}{Message to print}
 }
 \description{
 Print messages if verbose=TRUE in calling function.

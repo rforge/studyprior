@@ -1,18 +1,17 @@
 #' Empirical Bayes Power Prior for Binomial Data
 #'
-#' @param x historical events
-#' @param n historical trials
-#' @param X
-#' @param N
-#' @param verbose
-#' @param mc.cores
-#' @param p.prior.a
-#' @param p.prior.b
+#' @param x number of historical successes
+#' @param n number historical patients
+#' @param X vector of new successes to computer prior for
+#' @param N number of new patients
+#' @param verbose TRUE
+#' @param mc.cores number of cores for parallel
+#' @param p.prior.a shape1 parameter of initial beta prior for successes
+#' @param p.prior.b shape2 parameter of initial beta prior for successes 
 #'
 #' @return A function of the probability parmater p
 #' @export
 #'
-#' @examples
 #'
 binom.PP.EB <- function(x, n, X, N, verbose=FALSE, mc.cores=1, p.prior.a=1, p.prior.b=1){
   #if X isn't specified we calculate it for all, set flag too

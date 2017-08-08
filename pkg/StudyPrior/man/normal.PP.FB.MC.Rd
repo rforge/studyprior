@@ -12,7 +12,22 @@ normal.PP.FB.MC(x, sd, verbose = FALSE, length = 30, d.prior.a = 1,
 
 \item{sd}{standard deviations}
 
-\item{focus}{list(from, to, length) to evaluate the marginal density when fitting the curve}
+\item{verbose}{Print messages}
+
+\item{length}{Number of points to evaluate density at}
+
+\item{d.prior.a}{shape1 parameter for beta prior on weights}
+
+\item{d.prior.b}{shape2 parameter for beta prior on weights}
+
+\item{mc.cores}{Number of cores for parallel}
+
+\item{samples}{Number of Monte Carlo samples}
+
+\item{focus}{List of triples specifying regions to focus on, eg peaks. Specified as list(c(lower, upper, length))}
+}
+\value{
+Density function
 }
 \description{
 Normal power prior with full Bayes by Monte Carlo

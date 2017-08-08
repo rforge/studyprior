@@ -1,15 +1,15 @@
 #' Full Bayes Bias Prior for Binomial Data
 #'
-#' @param x historical events
-#' @param n historical trials
-#' @param tau.prior optional prior on bias parameter
+#' @param x number of historical successes
+#' @param n number historical patients
+#' @param verbose Print messages
+#' @param mc.cores number of cores for parallel
 #'
 #' @return A function of the probability parmater p
 #' @export
 #'
-#' @examples
 #'
-binom.Bias.FB <- function(x, n, verbose=FALSE, length=30, dprior, mc.cores=1){
+binom.Bias.FB <- function(x, n, verbose=FALSE,  mc.cores=1){
   n.hist <- length(x)
 
   dat <- data.frame(x, n, z=1:n.hist)

@@ -14,10 +14,12 @@ binom.prior(type = c("MAP.FB", "MAP.EB", "PP.FB", "PP.EB", "PP.EB.Beta",
 
 \item{n}{Vector of historical sample sizes}
 
+\item{verbose}{Print messages}
+
 \item{...}{Parameters to provide to prior}
 }
 \value{
-A function
+A density function
 }
 \description{
 Prior distribution for binomial data

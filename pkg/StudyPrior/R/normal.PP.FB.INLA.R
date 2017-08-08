@@ -2,18 +2,13 @@
 #'
 #' @param x numeric vector of results
 #' @param sd standard deviations
-#' @param verbose
-#' @param length
-#' @param dprior
-#' @param mc.cores
-#' @param samples
-#' @param focus list(from, to, length) to evaluate the marginal density when fitting the curve
+#' @param verbose Print messages
 #'
-#' @return
+#' @return A density function
 #' @export
 #'
-#' @examples
-normal.PP.FB.INLA <- function(x, sd, verbose=FALSE, length=30, d.prior.a=1, d.prior.b=1, mc.cores=1, samples=10000, focus){
+
+normal.PP.FB.INLA <- function(x, sd, verbose=FALSE ){
   n.hist <- length(x)
 
   A<-1

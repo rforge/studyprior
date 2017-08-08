@@ -8,11 +8,22 @@ calc.bias(prior, prob.range = c(0.5, 1), length = 20, n.binom = 30,
   posterior, mc.cores = 1, type = "mean")
 }
 \arguments{
-\item{posterior}{a posterior function}
+\item{prior}{Prior to calculate posterior. Specify posterior instead if available.}
 
-\item{mc.cores}{number of cores}
+\item{prob.range}{Range of values to calculate MSE over}
+
+\item{length}{Number of values to calculate MSE for}
+
+\item{n.binom}{Number of patients in new trial}
+
+\item{posterior}{Posterior density}
+
+\item{mc.cores}{Number of cores for parallel}
 
 \item{type}{Either "mean" or "mode" of the posterior to use as the estimate}
+}
+\value{
+A vector of bias values
 }
 \description{
 Calculate bias

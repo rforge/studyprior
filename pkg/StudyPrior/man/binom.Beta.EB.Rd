@@ -10,14 +10,13 @@ binom.Beta.EB(x, n, verbose = FALSE)
 \item{x}{historical events}
 
 \item{n}{historical trials}
+
+\item{verbose}{Print messages}
 }
 \value{
 A function of the probability parmater p
 }
 \description{
 Empirical Bayes Beta Prior for Binomial Data
-}
-\examples{
-
 }
 

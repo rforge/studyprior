@@ -1,15 +1,17 @@
 #' Empirical Bayes Meta-Analytic Prior for Binomial Data
 #'
-#' @param x historical events
-#' @param n historical trials
-#' @param tau.prior optional prior on heterogeneity parameter
+#' @param x number of historical successes
+#' @param n number historical patients
+#' @param verbose Print messages
+#' @param mc.cores number of cores for parallel
+#' @param X vector of new successes to computer prior for
+#' @param N number of new patients
+#' @param upper Upper limit of variance parameter
 #'
 #' @return A function of the probability parmater p
 #' @export
 #'
-#' @examples
-#'
-binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
+binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper = 4,  mc.cores){
   n.hist <- length(x)
   n.new <- 0
 
@@ -17,7 +19,7 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
 
  f <- mcmapply(mc.cores=mc.cores,
                X=X, N=N,
-    FUN=function(X,N, upper=upper, VAR=VAR){
+    FUN=function(X,N, upper=upper){
 
       if(!(missing(X)|missing(N))) {
         x <- c(x,X)
@@ -49,42 +51,27 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
       ##########################################
 
 
-      if(missing(VAR)){
-        result <- INLA::inla(formula,
-                             data = dat,
-                             family = "binomial",
-                             control.fixed = list(mean.intercept = 0, prec.intercept = 1/1000),
-                             Ntrials=n
-                             # ,
-                             # control.predictor = list(compute=TRUE, link=1)
-                             # )
-        ,
-        verbose = verbose,
-        control.inla = list(int.strategy = "eb"))
-
-        result <- INLA::inla.hyperpar(result)
-
-        # plot(INLA::inla.tmarginal(function(x) 1/x^0.5,
-        #                           result$marginals.hyperpar[[1]],
-        #                           n=200), xlim=c(0,0.0001))
-
-        mode_tau <-  inla.mmarginal(INLA::inla.tmarginal(function(x) 1/x^.5,
-                                                         result$marginals.hyperpar[[1]],
-                                                         n=2000)[50:1950,])
-        #
-        #   mode_tau <- optimize(function(x){
-        #     INLA::inla.dmarginal(x,
-        #                    marg=INLA::inla.tmarginal(function(x) x^-.5,
-        #                                        result$marginals.hyperpar[[1]],
-        #                                        n=2000))},
-        #   interval = c(0,upper),
-        #   maximum = TRUE)
-
-         print(paste(X,mode_tau))
-      }
-      # VXN <- ifelse(missing(VAR), var(log((x/n)/(1-x/n))), VAR)
+      
+      result <- INLA::inla(formula,
+                           data = dat,
+                           family = "binomial",
+                           control.fixed = list(mean.intercept = 0, prec.intercept = 1/1000),
+                           Ntrials=n,
+                           verbose = verbose,
+                           control.inla = list(int.strategy = "eb"))
+      
+      result <- INLA::inla.hyperpar(result)
+      
+      mode_tau <-  inla.mmarginal(INLA::inla.tmarginal(function(x) 1/x^.5,
+                                                       result$marginals.hyperpar[[1]],
+                                                       n=2000)[50:1950,])
+      
+      
+      print(paste(X,mode_tau))
+      
+      
       VXN <- mode_tau^2
-
+      
       formulaEB = x ~ 1 + f(z, model="iid",
                             hyper = list(theta = list(fixed=TRUE,
                                                       initial=log(1/VXN)#1/mode_tau$maximum
@@ -115,27 +102,29 @@ binom.MAP.EB <- function(x, n, X, N, verbose=FALSE, upper, VAR, mc.cores){
 
       return(list(X=A,Y=B))
 
-      f <- INLA:::inla.sfmarginal(inla.smarginal(marginal=list(x=A,y=B)))
-
-
-      function(p)
-      {
-        n = length(p)
-        d = numeric(n)
-        for (i in 1:n) {
-          if (p[i] >= f$range[1] && p[i] <= f$range[2]) {
-            d[i] = exp(f$fun(p[i]))
-          }
-          else {
-            d[i] = 0
-          }
-        }
-        return(d)
-      }
+      # f <- INLA:::inla.sfmarginal(inla.smarginal(marginal=list(x=A,y=B)))
+      # 
+      # 
+      # function(p)
+      # {
+      #   n = length(p)
+      #   d = numeric(n)
+      #   for (i in 1:n) {
+      #     if (p[i] >= f$range[1] && p[i] <= f$range[2]) {
+      #       d[i] = exp(f$fun(p[i]))
+      #     }
+      #     else {
+      #       d[i] = 0
+      #     }
+      #   }
+      #   return(d)
+      # }
+      
+      
 })
 
 
- rm(x,n,X,N,VAR, n.hist, n.new, upper, verbose, mc.cores)
+ rm(x,n,X,N, n.hist, n.new, upper, verbose, mc.cores)
 
  function(p,X) {
    dens <- rep(0,length(p))

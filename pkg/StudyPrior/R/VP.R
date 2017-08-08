@@ -1,11 +1,9 @@
 #' Print messages if verbose=TRUE in calling function.
 #'
-#' @param message
+#' @param message Message to print
 #'
-#' @return
 #' @export
 #'
-#' @examples
 VP <- function(message){
   # if(parent.frame()$verbose)
     print(message)

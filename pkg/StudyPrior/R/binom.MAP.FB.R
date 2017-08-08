@@ -1,9 +1,9 @@
 #' Full Bayesian Meta-Analytic Prior for Binomial Data
 #'
-#' @param x historical events
-#' @param n historical trials
+#' @param x number of historical successes
+#' @param n number historical patients
 #' @param tau.prior optional prior on heterogeneity parameter
-#' @param verbose
+#' @param verbose Print messages
 #'
 #' @return A function of the probability parmater p
 #' @export

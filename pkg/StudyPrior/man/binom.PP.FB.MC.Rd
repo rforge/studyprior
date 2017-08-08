@@ -2,19 +2,34 @@
 % Please edit documentation in R/binom.PP.FB.MC.R
 \name{binom.PP.FB.MC}
 \alias{binom.PP.FB.MC}
-\title{Title}
+\title{Full Bayes Power Prior}
 \usage{
 binom.PP.FB.MC(x, n, verbose = FALSE, length = 30, d.prior.a = 1,
   d.prior.b = 1, mc.cores = 1, samples = 10000, focus)
 }
 \arguments{
-\item{d.prior.a}{shape1 parameter for beta prior on weight}
+\item{x}{number of historical successes}
 
-\item{d.prior.b}{shape2 parameter for beta prior on weight}
+\item{n}{number historical patients}
 
-\item{focus}{}
+\item{verbose}{Print messages}
+
+\item{length}{Number of points to evaluate density at}
+
+\item{d.prior.a}{shape1 parameter for beta prior on weights}
+
+\item{d.prior.b}{shape2 parameter for beta prior on weights}
+
+\item{mc.cores}{Number of cores for parallel}
+
+\item{samples}{Number of Monte Carlo samples}
+
+\item{focus}{List of triples specifying regions to focus on, eg peaks. Specified as list(c(lower, upper, length))}
+}
+\value{
+A density function
 }
 \description{
-Title
+Full Bayes Power Prior
 }
 

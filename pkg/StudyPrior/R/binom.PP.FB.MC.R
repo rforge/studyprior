@@ -1,19 +1,19 @@
-#' Title
+#' Full Bayes Power Prior
 #'
-#' @param x
-#' @param n
-#' @param verbose
-#' @param length
-#' @param d.prior.a shape1 parameter for beta prior on weight
-#' @param d.prior.b shape2 parameter for beta prior on weight
-#' @param mc.cores
-#' @param samples
-#' @param focus
+#' @param x number of historical successes
+#' @param n number historical patients
+#' @param verbose Print messages
+#' @param length Number of points to evaluate density at
+#' @param mc.cores Number of cores for parallel
+#' @param samples Number of Monte Carlo samples
+#' @param d.prior.a shape1 parameter for beta prior on weights
+#' @param d.prior.b shape2 parameter for beta prior on weights
+#' @param focus List of triples specifying regions to focus on, eg peaks. Specified as list(c(lower, upper, length))
 #'
-#' @return
+#' @return A density function
 #' @export
 #'
-#' @examples
+
 binom.PP.FB.MC <- function(x, n, verbose=FALSE, length=30, d.prior.a=1, d.prior.b=1, mc.cores=1, samples=10000, focus){
   n.hist <- length(x)
 

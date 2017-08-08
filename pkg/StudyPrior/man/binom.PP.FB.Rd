@@ -8,19 +8,26 @@ binom.PP.FB(x, n, verbose = FALSE, length = 30, dprior, mc.cores = 1,
   p.prior.a = 1, p.prior.b = 1)
 }
 \arguments{
-\item{x}{historical events}
+\item{x}{number of historical successes}
 
-\item{n}{historical trials}
+\item{n}{number historical patients}
 
-\item{tau.prior}{optional prior on heterogeneity parameter}
+\item{verbose}{Print messages}
+
+\item{length}{Number of points to evaluate density at}
+
+\item{dprior}{Density function for prior on weights}
+
+\item{mc.cores}{Number of cores for parallel}
+
+\item{p.prior.a}{shape1 parameter for beta prior on probability}
+
+\item{p.prior.b}{shape2 parameter for beta prior on probability}
 }
 \value{
 A function of the probability parmater p
 }
 \description{
 Full Bayes Power Prior for Binomial Data
-}
-\examples{
-
 }
 

@@ -1,28 +1,28 @@
-
-
 #' Calculate mean squared error
 #'
-#' @param prior
-#' @param prob.range
-#' @param length
-#' @param n.binom
+#' @param prior Prior to calculate posterior. Specify posterior instead if available.
+#' @param prob.range Range of values to calculate MSE over
+#' @param length Number of values to calculate MSE for
+#' @param n.binom Number of patients in new trial
+#' @param mc.cores Number of cores for parallel
+#' @param posterior Posterior density 
 #'
-#' @return
+#' @return A vector of error values
 #' @export
 #'
-#' @examples
 calc.MSE <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.cores=1, posterior){
 
   P <- seq(prob.range[1],prob.range[2],len=length)
 
-
+  if(missing(prior) &  missing(posterior)) stop("prior or posterior must be specified")
+  
   if(missing(posterior)){
     MSE.for.x <- parallel::mclapply(0:n.binom, function(Xs){
       if(inherits(prior, "function")){
         post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.binom, prob=p)/g
         f <- splinefun(smooth.spline(seq(0.001,0.999,len=1000), pmax(0,post(seq(.001,.999,len=1000)))))
         # print(Xs)
-        K <- adaptIntegrate(f, lower=0, upper=1, maxEval = 2e5)$integral
+        K <- adaptIntegrate(f, lowerLimit = 0, upperLimit = 1, maxEval = 2e5)$integral
         #  probability * square error
         sq.err <- function(p, true.p) f(p)/K * (p-true.p)^2
 
@@ -31,11 +31,11 @@ calc.MSE <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.cores=
         )
 
       } else if(inherits(prior, "mixture.list")){
-        post.list <- posterior.fun.list(Xs, n.binom, prior)
-        return((mean.fun.list(post.list)-P)^2 + var.fun.list(post.list))
+        post.list <- posterior.mixture.prior(Xs, n.binom, prior)
+        return((mean.mixture.prior(post.list)-P)^2 + var.mixture.prior(post.list))
       } else if(inherits(prior, "list")){
-        post.list <- posterior.fun.list(Xs, n.binom, prior[[Xs+1]])
-        return((mean.fun.list(post.list)-P)^2 + var.fun.list(post.list))
+        post.list <- posterior.mixture.prior(Xs, n.binom, prior[[Xs+1]])
+        return((mean.mixture.prior(post.list)-P)^2 + var.mixture.prior(post.list))
       }
 
 

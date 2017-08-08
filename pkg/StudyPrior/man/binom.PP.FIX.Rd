@@ -16,14 +16,13 @@ binom.PP.FIX(x, n, d, p.prior.a = 1, p.prior.b = 1, verbose)
 \item{p.prior.a}{shape1 parameter for beta prior on p}
 
 \item{p.prior.b}{shape2 parameter for beta prior on p}
+
+\item{verbose}{Print messages}
 }
 \value{
 Probability density function for paramater p
 }
 \description{
 Fixed Weight Power Prior for Binomial Data
-}
-\examples{
-
 }
 

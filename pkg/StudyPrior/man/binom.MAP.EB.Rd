@@ -4,22 +4,27 @@
 \alias{binom.MAP.EB}
 \title{Empirical Bayes Meta-Analytic Prior for Binomial Data}
 \usage{
-binom.MAP.EB(x, n, X, N, verbose = FALSE, upper, VAR, mc.cores)
+binom.MAP.EB(x, n, X, N, verbose = FALSE, upper = 4, mc.cores)
 }
 \arguments{
-\item{x}{historical events}
+\item{x}{number of historical successes}
 
-\item{n}{historical trials}
+\item{n}{number historical patients}
 
-\item{tau.prior}{optional prior on heterogeneity parameter}
+\item{X}{vector of new successes to computer prior for}
+
+\item{N}{number of new patients}
+
+\item{verbose}{Print messages}
+
+\item{upper}{Upper limit of variance parameter}
+
+\item{mc.cores}{number of cores for parallel}
 }
 \value{
 A function of the probability parmater p
 }
 \description{
 Empirical Bayes Meta-Analytic Prior for Binomial Data
-}
-\examples{
-
 }
 
