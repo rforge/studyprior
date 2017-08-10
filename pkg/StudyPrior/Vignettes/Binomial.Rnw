@@ -1,0 +1,121 @@
+\documentclass{article}
+%\VignetteIndexEntry{Historical Studies}
+
+\usepackage{parskip}
+\usepackage[a4paper, total={6.5in,9in}]{geometry}
+
+\begin{document}
+
+\author{Isaac Gravestock}
+\title{StudyPrior for Binary Outcomes}
+\maketitle
+
+The StudyPrior package implements a number of Bayesian priors used for clinical trials. 
+This vignette shows the methods for trials with a binary outcome.
+
+\section{StudyPrior for a Single Historical Study}
+
+StudyPrior implements a number of methods that are suitable for creating priors based on a single historical study.
+If a previous study under similar conditions had 21 successes for 37 subjects, we can use this to construct a prior. 
+<<data>>=
+library(StudyPrior)
+x <- 21
+n <- 37
+
+pp.fullbayes <- binom.prior(type="PP.FB", x=x, n=n)
+pp.fix.08 <- binom.prior(type = "PP.Fix", x=x, n=n, d=0.8)
+pp.fix.02 <- binom.prior(type = "PP.Fix", x=x, n=n, d=0.2)
+@
+
+These priors returned in the form of a density function for a single probability parameter. 
+
+We can also fit an empirical Bayes (EB) prior based on the new study, with say 50 patients.
+<<EmpiricalBayes>>=
+n.new <- 50
+pp.EB <- binom.prior(type = "PP.EB", x=x, n=n, X=0:n.new, N=n.new)
+@
+
+We can plot priors. The EB prior requires the number of successes in the new trial, say 30.
+<<plot, fig=TRUE>>=
+plot(0:1,0:1,ty="n",xlim=c(0,1), ylim=c(0,10), ylab="Density", xlab="Probability")
+
+curve(pp.fullbayes, add=TRUE, col="red")
+curve(pp.fix.08, add=TRUE, col="blue")
+curve(pp.fix.02, add=TRUE, col="green")
+curve(pp.EB(x,30), add=TRUE, col="orange")
+
+legend("topleft", col=c("red","blue","green", "orange"), lty=1, lwd=2,
+       legend=c("Full Bayes Power Prior", "Fixed Power Prior d=0.8",
+                "Fixed Power Prior d=0.2", "Empirical Bayes Power Prior"))
+@
+
+Useful functions such as calc.MSE are available to calculate operating characteristics.
+<<>>=
+MSE <- sapply(list(pp.fullbayes, pp.fix.08, pp.fix.02, pp.EB),
+              function(PRIOR) calc.MSE(prior=PRIOR, 
+          prob.range = c(0.3,0.8), length = 11, n.binom=n.new))
+
+p <- seq(0.4,0.9,len=11)
+plot(p,MSE[,1],  col="red" , pch=16, type='l')
+lines(p,MSE[,2],  col="blue", pch=16)
+lines(p,MSE[,3],  col="green", pch=16)
+lines(p,MSE[,4],  col="orange", pch=16)
+
+
+legend("topleft", col=c("red","blue","green", "orange"), lty=1, lwd=2,
+       legend=c("Full Bayes Power Prior", "Fixed Power Prior d=0.8",
+                "Fixed Power Prior d=0.2", "Empirical Bayes Power Prior"))
+
+@
+
+To calculate power and type I error, we need to have a second study arm to compare against. For those functions we calculate the significance tests with sig.matrix and then calculate the operating characteristics.
+
+<<sigmat>>=
+
+SM <- lapply(list(pp.fullbayes, pp.fix.08, pp.fix.02, pp.EB),
+       function(PRIOR) sig.matrix(n.new, n.new, 0.95, prior=PRIOR, mc.cores = 4))
+@
+For power calculations we need to specify a difference between the treatment arms that we wish to detect, here 0.2.
+<<Power, fig=TRUE>>=
+Difference <- 0.2
+
+POWER <- sapply(SM, function(SIGMAT) calc.power(sig.mat=SIGMAT, 
+      prob.rang=c(0.3,0.8), length=11, treatment.difference = Difference,
+      n.binom.control = n.new, n.binom.treatment = n.new))
+
+plot(p,POWER[,1],  col="red", type='l', ylab="Power", xlab="Probability")
+lines(p,POWER[,2],  col="blue")
+lines(p,POWER[,3],  col="green")
+lines(p,POWER[,4],  col="orange")
+
+legend("topleft", col=c("red","blue","green", "orange"), lty=1, lwd=2,
+       legend=c("Full Bayes Power Prior", "Fixed Power Prior d=0.8",
+                "Fixed Power Prior d=0.2", "Empirical Bayes Power Prior"))
+
+@
+
+
+For type I error, we use the same function as for power, but we set the treatment difference to 0.
+<<TypeIError, fig=TRUE>>=
+T1E <- sapply(SM, function(SIGMAT) calc.power(sig.mat=SIGMAT, 
+         prob.rang=c(0.3,0.8), length=11, treatment.difference = 0,
+         n.binom.control = n.new, n.binom.treatment = n.new))
+
+
+plot(p,T1E[,1],  col="red",  ylab="Type I Error", xlab="Probability")
+points(p,T1E[,2],  col="blue")
+points(p,T1E[,3],  col="green")
+points(p,T1E[,4],  col="orange")
+
+legend("topleft", col=c("red","blue","green", "orange"), lty=1, lwd=2,
+       legend=c("Full Bayes Power Prior", "Fixed Power Prior d=0.8",
+                "Fixed Power Prior d=0.2", "Empirical Bayes Power Prior"))
+
+@
+
+
+
+
+\section{StudyPrior for Multiple Historical Studies}
+
+\end{document}
