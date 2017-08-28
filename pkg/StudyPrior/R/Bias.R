@@ -18,7 +18,7 @@ calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterio
 
   P <- seq(prob.range[1],prob.range[2],len=length)
   if(missing(posterior)){
-    Bias.for.x <- sapply(0:n.binom, function(Xs){
+    Bias.for.x <- parallel::mclapply(0:n.binom, function(Xs){
 
       if(inherits(prior, "function")){
         post <- function(p,g=1) prior(p,Xs)*dbinom(x=Xs, size=n.binom, prob=p)/g
@@ -33,13 +33,14 @@ calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterio
           adaptIntegrate(Ep,0,1, true.p=true.p, maxEval=1e4)$integral - true.p})
         )
 
-      } else if(inherits(prior, "mixture.list")){
+      } else if(inherits(prior, "mixture.prior")){
         return(mean.mixture.prior(x=posterior.mixture.prior(Xs, n.binom, prior))-P)
 
       } else if(inherits(prior, "list")){
         return(mean.mixture.prior(x=posterior.mixture.prior(Xs, n.binom, prior[[Xs+1]]))-P)
       }
-    })
+    }, mc.cores=mc.cores)
+    
   } else if(!missing(posterior)){
     Bias.for.x <- parallel::mclapply(posterior, function(post){
       print("Biasing!")

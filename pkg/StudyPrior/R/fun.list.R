@@ -36,17 +36,19 @@ is.mixture.prior <- function(x) {
 
 #' Update parameters or weights in mixture model
 #'
-#' @param ... Additional arguments: pars and weights. See \code{\link{create.mixture.prior}}
+#' @param ... Unused
 #' @param object mixture.prior to update
+#' @param pars New paramers 
+#' @param weights New weights
 #'
 #' @return A \code{mixture.prior} object with updated weights and parameters
 #' @export
 #' @method update mixture.prior
-update.mixture.prior <- function(object, ... ){
+update.mixture.prior <- function(object, ..., pars, weights ){
   
-  args <- eval(substitute(alist(...)))
-  pars <- args$pars
-  weights <- args$weights
+  # args <- eval(substitute(alist(...)))
+  # pars <- args$pars
+  # weights <- args$weights
   
   if(!missing(pars)){
     par.names <- attr(object, "par.type")
@@ -101,8 +103,10 @@ eval.mixture.prior <- function(x, mixture.prior, weights, subset){
 #' @export
 #'
 
-plot.mixture.prior <- function(x, mixture.prior, stack=FALSE, lines.only=FALSE, ...){
+plot.mixture.prior <- function(mixture.prior, x, stack=FALSE, lines.only=FALSE, ...){
 
+  if(missing(x)) x <- seq(0,1, length=200)
+      
   Y <- eval.mixture.prior(x, mixture.prior)
   if(!lines.only) plot(x,Y, type='n', ...)
 
@@ -223,7 +227,7 @@ print.mixture.prior <- function(x, ...){
   rownames(df) <- NULL
   cat("\n",attr(x,"type"),"mixture\n")
   print(df)
-  cat("\nEffective sample size: ",ess.mixture.prior(x))
+  cat("\nTotal sample size: ",ess.mixture.prior(x))
 }
 
 

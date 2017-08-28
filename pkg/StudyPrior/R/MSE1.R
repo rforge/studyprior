@@ -30,7 +30,7 @@ calc.MSE <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.cores=
           adaptIntegrate(sq.err,0,1, true.p=true.p, maxEval=2e5)$integral})
         )
 
-      } else if(inherits(prior, "mixture.list")){
+      } else if(inherits(prior, "mixture.prior")){
         post.list <- posterior.mixture.prior(Xs, n.binom, prior)
         return((mean.mixture.prior(post.list)-P)^2 + var.mixture.prior(post.list))
       } else if(inherits(prior, "list")){

@@ -27,7 +27,7 @@ calc.MSE.mode <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.c
         #   square error
         sq.err <- (p$maximum-P)^2
         return(sq.err)
-      } else if(inherits(prior, "mixture.list")){
+      } else if(inherits(prior, "mixture.prior")){
         post.list <- posterior.mixture.prior(Xs, n.binom, prior)
         return((mean.mixture.prior(post.list)-P)^2 + var.mixture.prior(post.list))
       } else if(inherits(prior, "list")){

@@ -35,7 +35,7 @@ sig.matrix <- function(n.control, n.treatment, level=0.975, prior, posterior, tr
             function(p,g=K) f(p)/g
             # formals(post) <- alist(p = , g = K)
             # K <- K *integrate(post, lower=0, upper=1)$value
-          } else if(inherits(prior, "mixture.list")){
+          } else if(inherits(prior, "mixture.prior")){
             post.list <- posterior.mixture.prior(Xs, n.control, prior)
             function(p) eval.mixture.prior(p, post.list)
           } else if(inherits(prior, "list")){

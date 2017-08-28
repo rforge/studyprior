@@ -27,7 +27,7 @@ calc.MSE.mean <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.c
       post.mean <- adaptIntegrate(function(p) p*f(p)/K,0,1,  maxEval=2e5)$integral
         return((post.mean - P)^2)
 
-    } else if(inherits(prior, "mixture.list")){
+    } else if(inherits(prior, "mixture.prior")){
       post.list <- posterior.mixture.prior(Xs, n.binom, prior)
       return((mean.mixture.prior(post.list)-P)^2 )
     } else if(inherits(prior, "list")){

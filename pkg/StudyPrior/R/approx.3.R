@@ -35,7 +35,9 @@ conj.approx <- function(distr,
   dat.quick <- data.frame(  x = rep(seq(range[1],range[2], length.out = length.fit), each=1),
                             y = distr(x))[-c(1:3,(23):25),]
 
-  if(do.plot) plot(x,y, type='l', col=2)
+  plot.x <- rep(seq(range[1],range[2], length.out = length.fit*4), each=1)
+  plot.y <- distr(plot.x) 
+  if(do.plot) plot(plot.x, plot.y, type='l', col=2, xlab=expression(theta), ylab="Density")
 
   type <- match.arg(type)
 
@@ -97,9 +99,9 @@ conj.approx <- function(distr,
     opt <-
       optimr::optimr(unlist(starts),
                      function(PAR){
-                       sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(mixture.prior = fl,
+                       sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(object = fl,
                                                                                    pars=PAR[-(1:degree)],
-                                                                                   weights=PAR[1:degree])))^2)
+                                                                                   weights=PAR[1:degree])))^2)/length.fit
                      },
                      lower=unlist(lower.list),
                      upper=unlist(upper.list),
@@ -114,9 +116,9 @@ conj.approx <- function(distr,
       opt <-
         optimr::optimr(unlist(start.list),
                        function(PAR){
-                         sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(mixture.prior = fl,
+                         sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(object = fl,
                                                                          pars=PAR[-(1:degree)],
-                                                                         weights=PAR[1:degree])))^2)
+                                                                         weights=PAR[1:degree])))^2)/length.fit
                        },
                        lower=unlist(lower.list),
                        upper=unlist(upper.list),
@@ -132,9 +134,9 @@ conj.approx <- function(distr,
       opt <-
         optimr::optimr(start.rand,
                        function(PAR){
-                         sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(mixture.prior = fl,
+                         sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(object = fl,
                                                                          pars=PAR[-(1:degree)],
-                                                                         weights=PAR[1:degree])))^2)
+                                                                         weights=PAR[1:degree])))^2)/length.fit
                        },
                        lower=unlist(lower.list),
                        upper=unlist(upper.list),
@@ -165,13 +167,15 @@ conj.approx <- function(distr,
   opt <- results[[id]]
   degree <- (1:max.degree)[id]
 
-if(robust){
-  fl <- create.mixture.prior(type, pars=c(opt$par[-(1:degree)],1,1),
-                        weights=c(opt$par[1:degree]/sum(c(opt$par[1:degree]))*(1-robust),
-                                  robust))
-} else fl <- create.mixture.prior(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
-
-  if(do.plot) plot.mixture.prior(x, fl, stack=TRUE, lines.only=TRUE)
+  #add robust component
+  if(robust){
+    fl <- create.mixture.prior(type, pars=c(opt$par[-(1:degree)],1,1),
+                               weights=c(opt$par[1:degree]/sum(c(opt$par[1:degree]))*(1-robust),
+                                         robust))
+  } else fl <- create.mixture.prior(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
+  
+  #do plot if necessary
+  if(do.plot) plot.mixture.prior(plot.x, fl, stack=TRUE, lines.only=TRUE)
 
   return(fl)
 }

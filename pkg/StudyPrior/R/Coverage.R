@@ -40,7 +40,7 @@ calc.cis <- function(prior, level, n.control, posterior){
 
         # apply the smoothing
         return(CI)
-      } else if (inherits(prior,"mixture.list")){
+      } else if (inherits(prior,"mixture.prior")){
         q.mixture.prior(c((1-level)/2,1-(1-level)/2), posterior.mixture.prior(Xs, n.control, prior))
 
       } else if (inherits(prior,"list")){

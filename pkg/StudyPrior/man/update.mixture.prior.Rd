@@ -4,12 +4,16 @@
 \alias{update.mixture.prior}
 \title{Update parameters or weights in mixture model}
 \usage{
-\method{update}{mixture.prior}(object, ...)
+\method{update}{mixture.prior}(object, ..., pars, weights)
 }
 \arguments{
 \item{object}{mixture.prior to update}
 
-\item{...}{Additional arguments: pars and weights. See \code{\link{create.mixture.prior}}}
+\item{...}{Unused}
+
+\item{pars}{New paramers}
+
+\item{weights}{New weights}
 }
 \value{
 A \code{mixture.prior} object with updated weights and parameters
