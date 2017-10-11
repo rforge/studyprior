@@ -227,7 +227,7 @@ print.mixture.prior <- function(x, ...){
   rownames(df) <- NULL
   cat("\n",attr(x,"type"),"mixture\n")
   print(df)
-  cat("\nTotal sample size: ",ess.mixture.prior(x))
+  cat("\nTotal sample size: ",ess.mixture.prior(x),"\n")
 }
 
 
