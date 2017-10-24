@@ -23,18 +23,21 @@ binom.PP.FB.COR <- function(x, n, verbose=FALSE, mixture.size=1000, d.prior.cor=
     sumnx <- sum(n)-sumx
     D <- seq(0,1,len=mixture.size)
     
-    pars <- sapply(D, function(d) c(d*sumx+1, d*sumnx+1) )
     
-    mix <- create.mixture.prior("beta", pars, weights=rep(1/mixture.size,mixture.size))
+    pars <- outer(D, c(sumx+1, sumnx+1))
+    
+    mix <- create.mixture.prior("beta",
+                                pars,
+                                weights=rep(1/mixture.size,mixture.size))
     
     
   } else if(d.prior.cor==0){#independent case
     leng <- round(mixture.size^(1/n.hist))
     mixture.size <- leng^n.hist
     
-    D <- expand.grid(rep(list(seq(0,1,len=leng)),n.hist))
-    pars <- apply(D,1, function(d) c(d%*%x+1, d%*%(n-x)+1) )
-    
+    D <- as.matrix(expand.grid(rep(list(seq(0,1,len=leng)),n.hist)))
+    pars <- D %*% matrix(c(x+1, n-x+1), ncol=2)
+      
     mix <- create.mixture.prior("beta", pars, weights=rep(1/mixture.size,mixture.size))
     
     
@@ -44,7 +47,7 @@ binom.PP.FB.COR <- function(x, n, verbose=FALSE, mixture.size=1000, d.prior.cor=
     
     D <- pnorm(rmvnorm(mixture.size, mean=rep(0,n.hist), sigma=sigma) )
     
-    pars <- apply(D,1, function(d) c(d%*%x+1, d%*%(n-x)+1) )
+    pars <- D %*% matrix(c(x+1, n-x+1), ncol=2)
     
     mix <- create.mixture.prior("beta", pars, weights=rep(1/mixture.size,mixture.size))
   }
