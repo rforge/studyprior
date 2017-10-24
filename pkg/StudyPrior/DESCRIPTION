@@ -1,7 +1,7 @@
 Package: StudyPrior
 Type: Package
 Title: Distributions for Historical Information
-Version: 0.0.6
+Version: 0.0.7
 Author: Isaac Gravestock
 Maintainer: Isaac Gravestock <isaac.gravestock@uzh.ch>
 Description: Implements useful prior distributions for incorporating data from
