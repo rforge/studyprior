@@ -4,13 +4,13 @@
 \alias{plot.mixture.prior}
 \title{Plot mixture model}
 \usage{
-\method{plot}{mixture.prior}(x, mixture.prior, stack = FALSE,
+\method{plot}{mixture.prior}(mixture.prior, x, stack = FALSE,
   lines.only = FALSE, ...)
 }
 \arguments{
-\item{x}{Vector of values to evaluate density at}
-
 \item{mixture.prior}{Mixture prior}
+
+\item{x}{Vector of values to evaluate density at}
 
 \item{stack}{Plot the mixture components as stacked regions}
 

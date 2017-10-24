@@ -53,7 +53,7 @@ update.mixture.prior <- function(object, ..., pars, weights ){
   if(!missing(pars)){
     par.names <- attr(object, "par.type")
     split.pars <- split(unlist(pars), rep(1:length(object), each=length(par.names)))
-    attr(object,"pars") <- pars
+    attr(object,"pars") <- unlist(pars)
     for(i in 1:length(object)){
       tmp <- formals(object[[i]])
       tmp[par.names] <- split.pars[[i]]
@@ -198,7 +198,8 @@ posterior.mixture.prior <- function(xs, ns, mixture.prior){
   s1 <- as.vector(matrix(pars,nrow=2)[1,])
   s2 <- as.vector(matrix(pars,nrow=2)[2,])
 
-  lik <- mapply(VGAM::dbetabinom.ab, x=xs, size=ns, shape1=s1, shape2=s2)
+  # lik <- mapply(dbetabinom.ab, x=xs, size=ns, shape1=s1, shape2=s2)
+  lik <- dbetabinom.ab(x=xs, size=ns, shape1=s1, shape2=s2)
   ws <- weights*lik / sum(weights*lik)
 
   flp <- update.mixture.prior(mixture.prior,

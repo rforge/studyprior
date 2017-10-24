@@ -15,6 +15,7 @@ export(binom.PP.FB)
 export(binom.PP.FB.MC)
 export(binom.PP.FB.MC.BE)
 export(binom.PP.FB.MC.COR)
+export(binom.PP.FB.COR)
 export(binom.PP.FIX)
 export(binom.prior)
 export(bool.mat.plot)
@@ -55,3 +56,5 @@ importFrom("cubature", "adaptIntegrate")
 
 importFrom("INLA", 'inla.dmarginal', 'inla.smarginal', 'f',
            'inla.hpdmarginal', 'inla.mmarginal', 'inla')
+
+importFrom("VGAM", 'dbetabinom.ab')
