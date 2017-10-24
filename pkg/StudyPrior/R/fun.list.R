@@ -204,18 +204,13 @@ var.mixture.prior <- function(mixture.prior){
 posterior.mixture.prior <- function(xs, ns, mixture.prior){
   pars <- matrix(attr(mixture.prior,'pars'),nrow=2)
    
-  ps <- as.vector(pars) + c(xs,ns-xs)
-
-  # s1 <- as.vector(pars[1,])
-  # s2 <- as.vector(pars[2,])
-
   # lik <- mapply(dbetabinom.ab, x=xs, size=ns, shape1=s1, shape2=s2)
   lik <- dbetabinom.ab(x=xs, size=ns, shape1=as.vector(pars[1,]), shape2=as.vector(pars[2,]))
   ws <- attr(mixture.prior,'weights')*lik
   ws <- ws/sum(ws)
 
   flp <- update.mixture.prior(mixture.prior,
-                         pars=ps,
+                         pars=as.vector(pars) + c(xs,ns-xs),
                          weights= ws)
   return(flp)
 }
