@@ -196,7 +196,7 @@ posterior.mixture.prior <- function(xs, ns, mixture.prior){
 
   if(length(xs)>1 | length(ns)>1) stop("posterior.mixture.prior is not vectorized for xs and ns.")
   
-  lik <- dbetabinom.ab(x=xs, size=ns, shape1=pars[1,], shape2=pars[2,])
+  lik <- dbetabinom.ab(x=xs, size=ns, shape1=pars[,1], shape2=pars[,2])
   ws <- attr(mixture.prior,'weights')*lik
   ws <- ws/sum(ws)
 
