@@ -80,16 +80,29 @@ update.mixture.prior <- function(object, ..., pars, weights ){
 #' @export 
 #'
 eval.mixture.prior <- function(x, mixture.prior, weights, subset){
-  if(missing(subset)) subset <- 1:length(mixture.prior)
+  
   X <- rep(0,length(x))
 
-  if(missing(weights)) weights <- attr(mixture.prior, "weights")
-  w <- weights/sum(weights)
-
-  for(i in subset){
-    X <- X + w[i]*do.call(mixture.prior[[i]], list(x=x))
+  if(!missing(weights)){
+    w <- weights
+  } else{ 
+    w <- attr(mixture.prior, "weights")
   }
-  X
+  
+  sumw <- sum(w)
+  if(!sumw==1) w <- w/sumw
+  
+  
+  
+  if(!missing(subset)){
+    for(i in subset){
+      X <- X + w[i]*do.call(mixture.prior[[i]], list(x=x))
+    }
+    return(X)
+  }else{
+    return(w %*% sapply(mixture.prior, do.call, list(x=x)))
+  }
+  
 }
 
 #' Plot mixture model
