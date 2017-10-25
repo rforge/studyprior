@@ -53,7 +53,7 @@ sig.matrix <- function(n.control, n.treatment, level=0.975, prior, posterior, tr
       
     ZZ <-unlist(
       lapply(check.xt, function(xT){
-       print(paste0('.',xT))
+       # print(paste0('.',xT))
       res <-  try({
         # if(debug ) browser()
 
