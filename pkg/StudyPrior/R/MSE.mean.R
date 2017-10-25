@@ -36,11 +36,19 @@ calc.MSE.mean <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, mc.c
     }
   }, mc.cores = mc.cores)
   } else if(!missing(posterior)){
+    
+    if(inherits(posterior[[1]], "mixture.prior")){
+      #for a list of mixtures
+      MSE.for.x <- parallel::mclapply(posterior, function(post){
+        return((mean(post)-P)^2 ) #mean.mixture.prior()
+      })
+    } else {
+      #Methods for a list of posterior functions  
     MSE.for.x <- parallel::mclapply(posterior, function(post){
       post.mean <- adaptIntegrate(function(p) p*post(p),0,1,  maxEval=2e5)$integral
       return((post.mean - P)^2)
       }, mc.cores = mc.cores)
-  }
+  }}
 
   # return(MSE.for.x)
 

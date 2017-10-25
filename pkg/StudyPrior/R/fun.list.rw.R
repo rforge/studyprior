@@ -151,7 +151,8 @@ ess.mixture.prior <- function(mixture.prior){
 #'
 
 mean.mixture.prior <- function(x, ...){
-  as.numeric(apply(attr(x,"pars"),1, function(y) y[1]/sum(y)) %*% attr(x,"weights"))
+  as.numeric((attr(x,"pars")[,1]/rowSums(attr(x,"pars"))) %*% attr(x,"weights"))
+  
 }
 
 #' Calculate the variance of mixture model
