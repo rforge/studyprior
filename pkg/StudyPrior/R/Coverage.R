@@ -52,6 +52,14 @@ calc.cis <- function(prior, level, n.control, posterior){
     })
     as.matrix(t(CIs))
   }  else if(!is.null(posterior)){
+    if(inherits(posterior[[1]], "mixture.prior")){
+      CIs <- parallel::mclapply(posterior, function(post){
+        q.mixture.prior(c((1-level)/2,1-(1-level)/2), post)
+      })
+      matrix(unlist(CIs), ncol=2, byrow=TRUE)
+    }else{
+    
+    
     CIs <- sapply(posterior, function(post){
 
       lowerp <- function(P) adaptIntegrate(post, lowerLimit = 0, upperLimit = P)$integral
@@ -63,6 +71,7 @@ calc.cis <- function(prior, level, n.control, posterior){
       )
     })
     as.matrix(t(CIs))
+    }
   }
 }
 
