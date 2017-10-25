@@ -45,13 +45,15 @@ sig.matrix <- function(n.control, n.treatment, level=0.975, prior, posterior, tr
             function(p) eval.mixture.prior(p, post.list)
         }
         } else if(use.posterior) {
-            if(inherits(posterior[[1]],"mixture.prior")) function(p) eval.mixture.prior(p, posterior[[Xs+1]])
+            if(inherits(posterior[[1]],"mixture.prior"))  approxfun(seq(0,1,len=200),
+                                                                    eval.mixture.prior(seq(0,1,len=200),
+                                                                                       posterior[[Xs+1]]))
           else posterior[[Xs+1]]
           }
       
     ZZ <-unlist(
       lapply(check.xt, function(xT){
-      # print(paste0('.',xT))
+       print(paste0('.',xT))
       res <-  try({
         # if(debug ) browser()
 
