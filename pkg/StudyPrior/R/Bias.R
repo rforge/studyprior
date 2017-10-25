@@ -42,15 +42,24 @@ calc.bias <- function(prior, prob.range=c(.5,1), length=20, n.binom=30, posterio
     }, mc.cores=mc.cores)
     
   } else if(!missing(posterior)){
-    Bias.for.x <- parallel::mclapply(posterior, function(post){
-      print("Biasing!")
-      print(post)
-      if( type == "mean") Ep <-  adaptIntegrate(function(p) post(p)*p, 0,1, maxEval=1e4)$integral
-      else if(type == "mode") Ep <-  optimize(function(p) post(p), c(0,1), maximum = TRUE)$maximum
-
-      return(sapply(P, function(true.p){ Ep - true.p})
-      )
+    
+    if(inherits(posterior[[1]], "mixture.prior")){
+      #for a list of mixtures
+      Bias.for.x <- parallel::mclapply(posterior, function(post){
+        return((mean(post)-P) ) #mean.mixture.prior()
       }, mc.cores = mc.cores)
+    } else {
+      #Methods for a list of posterior functions  
+      Bias.for.x <- parallel::mclapply(posterior, function(post){
+        print("Biasing!")
+        print(post)
+        if( type == "mean") Ep <-  adaptIntegrate(function(p) post(p)*p, 0,1, maxEval=1e4)$integral
+        else if(type == "mode") Ep <-  optimize(function(p) post(p), c(0,1), maximum = TRUE)$maximum
+        
+        return(sapply(P, function(true.p){ Ep - true.p})
+        )
+      }, mc.cores = mc.cores)
+    }
   }
 
   Bias.for.x <- matrix(unlist(Bias.for.x), nrow=length)
