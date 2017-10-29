@@ -29,7 +29,7 @@ conj.approx <- function(distr,
                         ){
 
   x <- rep(seq(range[1],range[2], length.out = length.fit), each=1)
-  y <- distr(x) #+ rnorm(length(x), 0, 0.05)
+  y <- distr(x)
   dat <- data.frame(x,y)[-c(1:4,(length.fit-4):length.fit),]
 
   dat.quick <- data.frame(  x = rep(seq(range[1],range[2], length.out = length.fit), each=1),
@@ -85,8 +85,8 @@ conj.approx <- function(distr,
 
     #############################################################################
     fl <- create.mixture.prior(type,
-                          unlist(start.list)[-c(1:degree)],
-                          unlist(start.list)[1:degree])
+                          pars = matrix(unlist(start.list)[-c(1:degree)],ncol=2),
+                          weights = unlist(start.list)[1:degree])
 
 
     opt.env <- new.env()
@@ -100,7 +100,7 @@ conj.approx <- function(distr,
       optimr::optimr(unlist(starts),
                      function(PAR){
                        sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(object = fl,
-                                                                                   pars=PAR[-(1:degree)],
+                                                                                   pars=matrix(PAR[-(1:degree)],ncol=2),
                                                                                    weights=PAR[1:degree])))^2)/length.fit
                      },
                      lower=unlist(lower.list),
@@ -117,7 +117,7 @@ conj.approx <- function(distr,
         optimr::optimr(unlist(start.list),
                        function(PAR){
                          sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(object = fl,
-                                                                         pars=PAR[-(1:degree)],
+                                                                         pars=matrix(PAR[-(1:degree)],ncol=2),
                                                                          weights=PAR[1:degree])))^2)/length.fit
                        },
                        lower=unlist(lower.list),
@@ -135,7 +135,7 @@ conj.approx <- function(distr,
         optimr::optimr(start.rand,
                        function(PAR){
                          sum((dat$y-eval.mixture.prior(dat$x, update.mixture.prior(object = fl,
-                                                                         pars=PAR[-(1:degree)],
+                                                                         pars=matrix(PAR[-(1:degree)],ncol=2),
                                                                          weights=PAR[1:degree])))^2)/length.fit
                        },
                        lower=unlist(lower.list),
@@ -169,10 +169,13 @@ conj.approx <- function(distr,
 
   #add robust component
   if(robust){
-    fl <- create.mixture.prior(type, pars=c(opt$par[-(1:degree)],1,1),
+    fl <- create.mixture.prior(type, 
+                               pars=rbind(matrix(opt$par[-(1:degree)],ncol=2), c(1,1)),
                                weights=c(opt$par[1:degree]/sum(c(opt$par[1:degree]))*(1-robust),
                                          robust))
-  } else fl <- create.mixture.prior(type, pars=opt$par[-(1:degree)], weights=opt$par[1:degree])
+  } else fl <- create.mixture.prior(type, 
+                                    pars=matrix(opt$par[-(1:degree)],ncol=2),
+                                    weights=opt$par[1:degree])
   
   #do plot if necessary
   if(do.plot) plot.mixture.prior(plot.x, fl, stack=TRUE, lines.only=TRUE)

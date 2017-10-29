@@ -3,6 +3,7 @@ library(foreach)
 library(StudyPrior)
 inla.setOption(num.threads=2)
 recalc <- 1:1000
+library(parallel)
 
 mclapply(mc.cores=20, recalc, function(i){
   # lapply( recalc, function(i){
@@ -65,9 +66,9 @@ mclapply(mc.cores=20, recalc, function(i){
        file=paste0("Fix-5/models_g_",i,".rda"))
 })
 
-mclapply(mc.cores=20, recalc, function(i){
+mclapply(mc.cores=35, recalc, function(i){
   print(i)
-  
+
   set.seed(300*i)
   N <- 5
   n <- rep(50,N)
@@ -76,9 +77,9 @@ mclapply(mc.cores=20, recalc, function(i){
   x/n
   Xs <- rbinom(1,100,0.6)
   Ns <- 200
-  F.PP0 <- binom.PP.FB.COR(x,n,mixture.size = 100000, d.prior.cor = 0)
-  F.PP5 <- binom.PP.FB.COR(x,n,mixture.size = 100000, d.prior.cor = 0.5)
-  F.PP1 <- binom.PP.FB.COR(x,n,mixture.size = 100000, d.prior.cor = 1)
+  F.PP0 <- binom.PP.FB.COR(x,n,mixture.size = 8^5, d.prior.cor = 0)
+  F.PP5 <- binom.PP.FB.COR(x,n,mixture.size = 8^5, d.prior.cor = 0.5)
+  F.PP1 <- binom.PP.FB.COR(x,n,mixture.size = 1000, d.prior.cor = 1)
   save(F.PP0,F.PP5,F.PP1, n, x,
        file=paste0("Fix-5/models_h_",i,".rda"))
 })
@@ -278,55 +279,73 @@ CORES <- 1
 recalc <- 1:1000
 
 
-calc <- function(i){
-  print(i)
+calc <- function(j){
+  print(j)
   try({
-    load(file=paste0("Fix-5/models_h_",i,".rda"))
-    
+    load(file=paste0("Fix-5/models_h_",j,".rda"))
+
     Ns <- 200
-    
+
     priors <- list(F.PP0 = environment(F.PP0)$mix,
                    F.PP1 = environment(F.PP1)$mix,
                    F.PP5 = environment(F.PP5)$mix)
-    
-    mse <- lappy(priors, function(pr)
-      calc.MSE.mean(prior=pr, prob.range=c(0,1), length = 100, mc.cores=CORES, n.binom=Ns)
-    )
-    
-    bias <- lapply(priors, function(pr)
-      calc.bias(prior = pr, prob.range=c(0,1), length = 100, n.binom=Ns, mc.cores=CORES))
-  
-    
-    
-    SIGMAT <- c(lapply(priors, function(pr)
-      sig.matrix(prior = pr, n.control=200, n.treatment = 200,
-                    check.xt=00:200, check.xs=0:200,
-                    level=0.975, mc.cores=CORES, debug=FALSE))
-    )
-    
-    
-    
-    pow <- mclapply(SIGMAT,
-                    function(S) calc.power(sig.mat=S, n.binom.control = 200,
-                                           prob.range = c(0,0.85), length =200, treatment.difference=0.12),
-                    mc.cores=CORES)
-    
-    t1e <- mclapply(SIGMAT,
-                    function(S) calc.power(sig.mat=S, n.binom.control = 200,
-                                           prob.range = c(0,0.9), length = 200, treatment.difference = 0),
-                    mc.cores=CORES)
-    
-    
-    cover <-  lapply(priors, function(pr)
-                calc.coverage(prior = pr, level = 0.95, n.control = 200, smooth = 0.03))
-    
+
+    cover <- t1e <- pow <- SIGMAT <- bias <- mse <- list()
+
+    for(i in 1:3){
+      system.time(
+        posteriors <- lapply(priors[i], function(pr){
+        mclapply(0:200, posterior.mixture.prior, ns=200, mixture.prior=pr)
+      })
+  )
+      system.time(
+      mse[i] <- lapply(posteriors, function(pr)
+        calc.MSE.mean(posterior=pr, prob.range=c(0,1), length = 100, mc.cores=CORES, n.binom=Ns)
+      )
+      )
+      system.time(
+      bias[i] <- lapply(posteriors, function(pr)
+        calc.bias(posterior = pr, prob.range=c(0,1), length = 100, n.binom=Ns, mc.cores=CORES))
+
+      )
+      system.time(
+
+      SIGMAT[i] <- c(lapply(posteriors, function(pr)
+        sig.matrix(posterior = pr, n.control=200, n.treatment = 200,
+                   check.xt=0:200, check.xs=0:200,
+                   level=0.975, mc.cores=CORES))
+      ) )
+      system.time(
+
+      pow[i] <- mclapply(SIGMAT[i],
+                      function(S) calc.power(sig.mat=S, n.binom.control = 200,
+                                             prob.range = c(0,0.85), length =200, treatment.difference=0.12),
+                      mc.cores=CORES)
+      )
+      system.time(
+      t1e[i] <- mclapply(SIGMAT[i],
+                      function(S) calc.power(sig.mat=S, n.binom.control = 200,
+                                             prob.range = c(0,0.9), length = 200, treatment.difference = 0),
+                      mc.cores=CORES)
+
+      )
+      system.time(
+      cover[i] <-  lapply(posteriors, function(pr)
+        calc.coverage(posterior = pr, level = 0.95, n.control = 200, smooth = 0.03))
+      )
+      rm(posteriors)
+      gc()
+
+    }
+
+
     n.fix <- n
     x.fix <- x
-    save(n.fix, x.fix,  bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("Fix-5/study_hix_",i,".rda"))
-    
+    save(n.fix, x.fix,  bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("Fix-5/study_hix_",j,".rda"))
+
   })
 }
 
 
 
-mclapply(recalc, calc, mc.cores=40)
+mclapply(recalc, calc, mc.cores=30)
