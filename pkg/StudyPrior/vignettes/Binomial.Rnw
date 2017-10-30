@@ -79,7 +79,7 @@ To calculate power and type I error, we need to have a second study arm to compa
 <<sigmat>>=
 
 SM <- lapply(list(pp.fullbayes.11, pp.fullbayes.55, pp.fix.08, pp.eb),
-       function(PRIOR) sig.matrix(n.new, n.new, 0.95, prior=PRIOR, mc.cores = 4))
+       function(PRIOR) sig.matrix(n.new, n.new, 0.95, prior=PRIOR, mc.cores = 1))
 @
 For power calculations we need to specify a difference between the treatment arms that we wish to detect, here 0.2.
 <<Power, fig=TRUE>>=

@@ -101,6 +101,37 @@ eval.mixture.prior <- function(x, mixture.prior, subset){
   
 }
 
+
+eval.mixture.prior2 <- function(x, mixture.prior, subset){
+  if(missing(subset)){
+    
+    X <- rep(x, each=attr(mixture.prior,"degree"))
+    FUN <- mixture.prior$fun
+    Z <- FUN(X,
+        attr(mixture.prior,"pars")[,1],
+        attr(mixture.prior,"pars")[,2])
+    Z2 <- matrix(Z,
+      nrow = attr(mixture.prior,"degree"), ncol=length(x) )
+    return(as.numeric(attr(mixture.prior,"weights") %*% Z2))
+    
+    
+    sapply(x, function(X){
+      attr(mixture.prior,"weights") %*%
+        mixture.prior$fun(X,
+                          attr(mixture.prior,"pars")[,1],
+                          attr(mixture.prior,"pars")[,2])
+    })
+  } else {
+    sapply(x, function(X){
+      attr(mixture.prior,"weights")[subset] %*%
+        mixture.prior$fun(X,
+                          attr(mixture.prior,"pars")[subset,1],
+                          attr(mixture.prior,"pars")[subset,2])
+    })
+  }
+  
+}
+
 #' Plot mixture model
 #'
 #' @param x Vector of values to evaluate density at
