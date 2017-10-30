@@ -23,9 +23,12 @@ library(StudyPrior)
 x <- 21
 n <- 37
 
-pp.fullbayes.11 <- binom.PP.FB.MC.BE(x = x, n = n, d.prior.a = 1, d.prior.b = 1)
-pp.fullbayes.55 <- binom.PP.FB.MC.BE(x = x, n = n, d.prior.a = .5, d.prior.b = .5)
-pp.fix.08 <- binom.PP.FIX(x=x, n=n, d=0.8)
+#Full Bayes with delta~Be(1,1)
+pp.fullbayes.11 <- binom.PP.FB.MC.BE(x = x, n = n, d.prior.a = 1, d.prior.b = 1) 
+#Full Bayes with delta~Be(.5,.5)
+pp.fullbayes.55 <- binom.PP.FB.MC.BE(x = x, n = n, d.prior.a = .5, d.prior.b = .5) 
+#Power prior with fixed delta=0.8
+pp.fix.08 <- binom.PP.FIX(x=x, n=n, d=0.8) 
 @
 
 These priors returned in the form of a density function for a single probability parameter. 
@@ -160,7 +163,7 @@ PP.EB <- binom.PP.EB(x=x.multi, n=n.multi, X=0:n.new, N=n.new)
 We can approximate the priors with mixtures of densities. This makes calculations of posteriors and some operating characteristics very fast because analytical formulas are available. This is an approximation whose accuracy depends on the number of mixture components and can require some time to find all the parameters.
 
 <<approx, fig=TRUE>>=
-MAP.approx <- conj.approx(MAP, type="beta", max.degree = 4)
+MAP.approx <- conj.approx(MAP, type="beta", max.degree = 3)
 
 curve(MAP, n=200, lty=1, lwd=2, ylab="Density", xlab=expression(theta))
 plot(MAP.approx,  col="cyan", lwd=2, lty=2, lines.only=TRUE)
@@ -169,7 +172,7 @@ legend("topleft", lty=1:2, col=c("black","cyan"), lwd=2, legend=c("MAP","Approxi
 @
 \\
 
-Here the plot shows the original density in black and the approximation in cyan. With 4 components the approximation is very good.
+Here the plot shows the original density in black and the approximation in cyan. With 3 components the approximation is very good.
 
 
 
