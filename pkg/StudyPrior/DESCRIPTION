@@ -19,7 +19,9 @@ Imports:
 Depends:
     INLA,
     cubature
+Suggests: knitr
 Additional_repositories:
     https://inla.r-inla-download.org/R/stable
+VignetteBuilder: knitr 
 RoxygenNote: 5.0.1
 
