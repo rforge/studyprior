@@ -23,7 +23,7 @@ mclapply(mc.cores=20, recalc, function(i){
   cat(i,".\n")
   F.MFP <- binom.prior("MAP.FB", x = x, n=n)
   cat(i,"..\n")
-  F.MEP <- binom.prior("MAP.EB", x = x, n=n, X=0:Ns, N=Ns, mc.cores=1, verbose=FALSE)
+  # F.MEP <- binom.prior("MAP.EB", x = x, n=n, X=0:Ns, N=Ns, mc.cores=1, verbose=FALSE)
   cat(i,"...\n")
   F.PFP <- binom.prior("PP.FB", x = x, n=n, samples=5000, length=512, mc.cores=1, verbose=FALSE)
   ## With feedback
@@ -38,8 +38,8 @@ mclapply(mc.cores=20, recalc, function(i){
   cat(i,"........\n")
   F.SGL <- binom.prior("PP.EB", x = sum(x), n=sum(n), X=0:Ns, N=Ns, verbose=FALSE, mc.cores=1)
   cat(i,".........\n")
-  save(F.MFP, F.MEP,F.PFP,F.PEP,F.FX0, F.COR, F.PSP, F.SGL, n,x,
-       file=paste0("Fix-50/models_f_",i,".rda"))
+  save(F.MFP, F.PFP,F.PEP,F.FX0, F.COR, F.PSP, F.SGL, n,x,
+       file=paste0("Fix-51/models_f_",i,".rda"))
 }
 )
 
@@ -59,7 +59,7 @@ mclapply(mc.cores=20, recalc, function(i){
   x <- mapply(rbinom, size=n, n=1, prob=z)
   x/n
   Xs <- rbinom(1,100,0.6)
-  Ns <-NN 
+  Ns <-NN
   F.CR9 <- binom.prior("PP.Cor", x = x, n=n, d.prior.cor=0.9, samples=5000, length=512)
 print(".")
   # F.C95 <- binom.prior("PP.Cor", x = x, n=n, d.prior.cor=0.95, samples=5000, length=512)
@@ -70,7 +70,7 @@ print("..")
                        robust = 0.1)
 print("saving")
   save(F.CR9,F.SUM,F.ROB, n, x,
-       file=paste0("Fix-50/models_g_",i,".rda"))
+       file=paste0("Fix-51/models_g_",i,".rda"))
 })
 }
 #
@@ -123,9 +123,9 @@ recalc <- 1:1000
 calc1 <- function(i){
   print(i)
   try({
-    load(file=paste0("Fix-50/models_f_",i,".rda"))
+    load(file=paste0("Fix-51/models_f_",i,".rda"))
 
-    Ns <-NN 
+    Ns <-NN
 
     posteriors <-
     lapply(list(
@@ -165,12 +165,12 @@ calc1 <- function(i){
 
     pow <- mclapply(SIGMAT,
                     function(S) calc.power(sig.mat=S, n.binom.control = Ns,
-                                           prob.range = c(0,0.85), length =Ns, treatment.difference=0.12),
+                                           prob.range = c(0,0.85), length =200, treatment.difference=0.12),
                     mc.cores=CORES)
 
     t1e <- mclapply(SIGMAT,
                     function(S) calc.power(sig.mat=S, n.binom.control = Ns,
-                                           prob.range = c(0,0.9), length = Ns, treatment.difference = 0),
+                                           prob.range = c(0,0.9), length = 200, treatment.difference = 0),
                     mc.cores=CORES)
 
 
@@ -180,11 +180,11 @@ calc1 <- function(i){
 
     n.fix <- n
     x.fix <- x
-    save(n.fix, x.fix,  bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("Fix-50/study_fix_",i,".rda"))
+    save(n.fix, x.fix,  bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("Fix-51/study_fix_",i,".rda"))
 
   })
 }
-#mclapply(1:1000,calc1, mc.cores=40)
+mclapply(1:1000,calc1, mc.cores=40)
 
 
 # For new priors  -------------------------------------------------
@@ -196,9 +196,9 @@ recalc <- 1:1000
 calc <- function(i){
   print(i)
   try({
-    load(file=paste0("Fix-50/models_g_",i,".rda"))
+    load(file=paste0("Fix-51/models_g_",i,".rda"))
 
-    Ns <- 200
+    Ns <- NN
 
     posteriors <-lapply(list(F.CR9,F.SUM),
                           Calc.posterior.all, N=Ns, mc.cores=CORES)
@@ -238,12 +238,12 @@ calc <- function(i){
 
     pow <- mclapply(SIGMAT,
                     function(S) calc.power(sig.mat=S, n.binom.control = Ns,
-                                           prob.range = c(0,0.85), length =Ns, treatment.difference=0.12),
+                                           prob.range = c(0,0.85), length =200, treatment.difference=0.12),
                     mc.cores=CORES)
 
     t1e <- mclapply(SIGMAT,
                     function(S) calc.power(sig.mat=S, n.binom.control = Ns,
-                                           prob.range = c(0,0.9), length = Ns, treatment.difference = 0),
+                                           prob.range = c(0,0.9), length = 200, treatment.difference = 0),
                     mc.cores=CORES)
 
 
@@ -254,13 +254,13 @@ calc <- function(i){
 
     n.fix <- n
     x.fix <- x
-    save(n.fix, x.fix,  bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("Fix-50/study_gix_",i,".rda"))
+    save(n.fix, x.fix,  bias,  cover, t1e, pow, mse, SIGMAT,  file=paste0("Fix-51/study_gix_",i,".rda"))
 
   })
 }
 
 
 
-mclapply(41:1000, calc, mc.cores=30)
+mclapply(1:1000, calc, mc.cores=30)
 
 }
